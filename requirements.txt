@@ -1,0 +1,5 @@
+geopandas==0.6.1
+vega_datasets==0.7.0
+numpy==1.18.1
+altair==4.1.0
+pandas==0.25.2
