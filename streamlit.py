@@ -66,8 +66,8 @@ def facebook_data_filter(df,country):
         df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
         .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     else:
-        adm1 = gpd.read_file(f'boundaries/tls/tls_admbnda_adm1_who_ocha_20200911.shp')
-        adm2 = gpd.read_file(f'boundaries/tls/tls_admbnda_adm2_who_ocha_20200911.shp')
+        adm1 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm1_who_ocha_20200911.shp')
+        adm2 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm2_who_ocha_20200911.shp')
         # df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
         # .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     return df
