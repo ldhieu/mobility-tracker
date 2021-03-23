@@ -9,7 +9,7 @@ from io import BytesIO
 from urllib.request import urlopen
 # or: requests.get(url).content
 
-# ----------READING DATA-----------------------------
+# ----------READING FACEBOOK DATA--------------------
 @st.cache
 def facebook_data_reader():
     resp = urlopen("https://data.humdata.org/dataset/c3429f0e-651b-4788-bb2f-4adbf222c90e/resource/55a51014-0d27-49ae-bf92-c82a570c2c6c/download/movement-range-data-2021-03-21.zip")
@@ -20,7 +20,6 @@ def facebook_data_reader():
     df['all_day_bing_tiles_visited_relative_change'] = df['all_day_bing_tiles_visited_relative_change']*100
     df['all_day_ratio_single_tile_users'] = df['all_day_ratio_single_tile_users']*100
     return df
-
 data = facebook_data_reader()
 
 # ----------INTRODUCTION-----------------------------
@@ -59,13 +58,13 @@ analysis_level = {'Provincial level':prov_column,'City/municipality level':city_
 def facebook_data_filter(df,country):
     df = df[df['country']==c_dict[country]]
     if country!='Timor Leste':
-        adm1 = gpd.read_file(f'../mobility_analytics_natural_disasters/data/boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_1.shp')
-        adm2 = gpd.read_file(f'../mobility_analytics_natural_disasters/data/boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_2.shp')
+        adm1 = gpd.read_file(f'boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_1.shp')
+        adm2 = gpd.read_file(f'boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_2.shp')
         df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
         .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     else:
-        adm1 = gpd.read_file(f'../mobility_analytics_natural_disasters/data/boundaries/tls/tls_admbnda_adm1_who_ocha_20200911.shp')
-        adm2 = gpd.read_file(f'../mobility_analytics_natural_disasters/data/boundaries/tls/tls_admbnda_adm2_who_ocha_20200911.shp')
+        adm1 = gpd.read_file(f'boundaries/tls/tls_admbnda_adm1_who_ocha_20200911.shp')
+        adm2 = gpd.read_file(f'boundaries/tls/tls_admbnda_adm2_who_ocha_20200911.shp')
         # df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
         # .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     return df
