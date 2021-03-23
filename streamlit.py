@@ -7,10 +7,9 @@ from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO
 from urllib.request import urlopen
-# from hdx.utilities.easy_logging import setup_logging
-# from hdx.hdx_configuration import Configuration
-# Configuration.create(hdx_site='prod', hdx_read_only=True,user_agent='WBG')
-# from hdx.data.dataset import Dataset
+from hdx.utilities.easy_logging import setup_logging
+from hdx.hdx_configuration import Configuration
+
 # or: requests.get(url).content
 
 # ----------READING FACEBOOK DATA--------------------
