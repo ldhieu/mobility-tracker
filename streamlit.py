@@ -7,8 +7,8 @@ from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO
 from urllib.request import urlopen
-from hdx.utilities.easy_logging import setup_logging
-from hdx.hdx_configuration import Configuration
+# from hdx.utilities.easy_logging import setup_logging
+# from hdx.hdx_configuration import Configuration
 
 # or: requests.get(url).content
 
