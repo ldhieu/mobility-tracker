@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from zipfile import ZipFile
 import altair as alt
-import hdx
+# import hdx
 from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO

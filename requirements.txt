@@ -1,5 +1,6 @@
-numpy==1.15.2
-geopandas==0.7.0
 vega_datasets==0.7.0
-pandas==1.0.3
+geopandas==0.6.1
+pandas==0.25.2
 altair==4.1.0
+hdx_python_country==2.6.4
+numpy==1.18.1
