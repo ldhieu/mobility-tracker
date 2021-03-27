@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from zipfile import ZipFile
 import altair as alt
+import hdx
 from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO
@@ -15,7 +16,7 @@ from urllib.request import urlopen
 # ----------READING FACEBOOK DATA--------------------
 @st.cache
 def facebook_data_reader():
-    resp = urlopen("https://data.humdata.org/dataset/c3429f0e-651b-4788-bb2f-4adbf222c90e/resource/55a51014-0d27-49ae-bf92-c82a570c2c6c/download/movement-range-data-2021-03-21.zip")
+    resp = urlopen("https://data.humdata.org/dataset/c3429f0e-651b-4788-bb2f-4adbf222c90e/resource/55a51014-0d27-49ae-bf92-c82a570c2c6c/download/movement-range-data-2021-03-22.zip")
     zipfile = ZipFile(BytesIO(resp.read()))
     file = [i for i in zipfile.namelist() if 'movement' in i][0]
     df = pd.read_csv(zipfile.open(file),sep='\t')
@@ -23,13 +24,12 @@ def facebook_data_reader():
     df['all_day_bing_tiles_visited_relative_change'] = df['all_day_bing_tiles_visited_relative_change']*100
     df['all_day_ratio_single_tile_users'] = df['all_day_ratio_single_tile_users']*100
     return df
-data = facebook_data_reader()
+fb = facebook_data_reader()
 
 # ----------INTRODUCTION-----------------------------
 
 ''' # Can big data be used to monitor human mobility disruptions in real time?'''
-"More than ever, 2020 highlighted that the incidence and aftermath of geographic and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from smartphones, we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries."
-
+st.markdown("More than ever, 2020 highlighted that the incidence and aftermath of climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://data.humdata.org/dataset/movement-range-maps), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries. [_Raw data can be found here_](https://data.humdata.org/dataset/movement-range-maps).")
 # st.title(f'Country {country}')    
 # st.header('Start by selecting a country.')
 country = st.radio('Start by selecting a country from the following Pacific countries.',
@@ -71,11 +71,11 @@ def facebook_data_filter(df,country):
         # df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
         # .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     return df
-df = facebook_data_filter(data,country)
+df = facebook_data_filter(fb,country)
+# st.write(f'{df.columns}')
 
 # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
 st.header(f'Analysis of mobility changes in {country}.')
-
 # ----------PROVINCE VISUALIZATION----------------------
 if country!='Timor Leste':
     analysis = st.radio('At what level would you like to conduct your analysis?',
@@ -86,8 +86,8 @@ if country!='Timor Leste':
         area = st.multiselect(
         f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
         options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analyis_level_default[analysis][country])
-        df_p = df[df[column].isin(area)].groupby([column,'ds']).mean().reset_index()
-        pr = alt.Chart(df_p).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
+        data = df[df[column].isin(area)].groupby([column,'ds']).mean().reset_index()
+        pr = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
             y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
             color=alt.Color(column,legend=alt.Legend(title=analysis_label[analysis]))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
         st.write(pr)
@@ -125,8 +125,8 @@ if country!='Timor Leste':
         df2 = df[~((df[analysis_level['Provincial level']].isin(prov2)) | (df[analysis_level['City/municipality level']].isin(cities_in)))].set_index('ds')\
             .resample('1D').mean().reset_index()#.set_index('ds').resample('7D').mean().reset_index()
         df2['status'] = 'Group 2'
-        df_c = pd.concat([df1,df2])
-        pr = alt.Chart(df_c).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
+        data = pd.concat([df1,df2])
+        pr = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
             y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
             color=alt.Color('status',legend=alt.Legend(title='Comparison groups'))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
         st.write(pr)
@@ -135,8 +135,21 @@ else:
     analysis = st.multiselect('Select your area of interest',
         options=['Dili Barat','Dili Timur'],
         default=['Dili Barat','Dili Timur'])
-    df_t = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
-    tls = alt.Chart(df_t).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
+    data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
+    tls = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
         y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
         color=alt.Color('polygon_name',legend=alt.Legend(title='Area'))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
     st.write(tls)
+
+# ----------DOWNLOADING DATA----------------------
+
+def get_table_download_link_csv(df):
+    csv = df.to_csv().encode()
+    b64 = base64.b64encode(csv).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">Download csv file</a>'
+    return href
+
+# if st.button('Export plot data to csv'):
+#     st.write(st.markdown(get_table_download_link_csv(data), unsafe_allow_html=True))
+# else:
+#     pass
