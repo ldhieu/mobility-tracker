@@ -3,20 +3,34 @@ import numpy as np
 import pandas as pd
 from zipfile import ZipFile
 import altair as alt
-# import hdx
+import hdx
 from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO
 from urllib.request import urlopen
-# from hdx.utilities.easy_logging import setup_logging
-# from hdx.hdx_configuration import Configuration
-
+from hdx.utilities.easy_logging import setup_logging
+from hdx.hdx_configuration import Configuration
+try:
+    Configuration.create(hdx_site='prod', hdx_read_only=True,user_agent='WBG')
+except:
+    pass
+from hdx.data.dataset import Dataset
 # or: requests.get(url).content
 
 # ----------READING FACEBOOK DATA--------------------
+
+def download_from_hdx():
+    '''
+    Function to download latest movement range maps from HDX.
+    '''
+    url = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1]['download_url']
+    # print('\nResource URL %s downloaded.' % (url))
+    return url
+
+
 @st.cache
 def facebook_data_reader():
-    resp = urlopen("https://data.humdata.org/dataset/c3429f0e-651b-4788-bb2f-4adbf222c90e/resource/55a51014-0d27-49ae-bf92-c82a570c2c6c/download/movement-range-data-2021-03-22.zip")
+    resp = urlopen(download_from_hdx())
     zipfile = ZipFile(BytesIO(resp.read()))
     file = [i for i in zipfile.namelist() if 'movement' in i][0]
     df = pd.read_csv(zipfile.open(file),sep='\t')
