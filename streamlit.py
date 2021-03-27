@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from zipfile import ZipFile
 import altair as alt
+import base64
 # import hdx
 from vega_datasets import data
 import geopandas as gpd
@@ -160,10 +161,11 @@ else:
 def get_table_download_link_csv(df):
     csv = df.to_csv().encode()
     b64 = base64.b64encode(csv).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">Download csv file</a>'
+    href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">Download the data used to generate this plot in a csv file by clicking here.</a>'
     return href
 
-# if st.button('Export plot data to csv'):
-#     st.write(st.markdown(get_table_download_link_csv(data), unsafe_allow_html=True))
+# if st.button('Generate csv file to download'):
+st.subheader('Export data')
+st.markdown(get_table_download_link_csv(data), unsafe_allow_html=True)
 # else:
 #     pass
