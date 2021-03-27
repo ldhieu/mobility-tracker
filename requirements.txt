@@ -2,5 +2,7 @@ vega_datasets==0.7.0
 geopandas==0.6.1
 pandas==0.25.2
 altair==4.1.0
-hdx_python_country==2.6.4
 numpy==1.18.1
+hdx-python-api==4.7.4
+hdx-python-country==2.6.4
+hdx-python-utilities==2.5.1
