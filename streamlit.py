@@ -159,13 +159,13 @@ else:
 # ----------DOWNLOADING DATA----------------------
 
 def get_table_download_link_csv(df):
-    csv = df.to_csv().encode()
+    csv = df.to_csv(index=False).encode()
     b64 = base64.b64encode(csv).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">Download the data used to generate this plot in a csv file by clicking here.</a>'
+    href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">here.</a>'
     return href
 
 # if st.button('Generate csv file to download'):
 st.subheader('Export data')
-st.markdown(get_table_download_link_csv(data), unsafe_allow_html=True)
+st.markdown(f'Download the data used to generate this plot in a csv file by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
 # else:
 #     pass
