@@ -2,9 +2,10 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from zipfile import ZipFile
+import requests
 import altair as alt
 import base64
-# import hdx
+import io
 from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO
@@ -28,9 +29,19 @@ def download_from_hdx():
     # print('\nResource URL %s downloaded.' % (url))
     return url
 
+@st.cache
+def government_response_reader():
+    url = ('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest.csv')
+    s=requests.get(url).content
+    c=pd.read_csv(io.StringIO(s.decode('utf-8')))
+    c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex']]
+    c.columns = ['CountryName', 'country', 'ds', 'PolicyValue']
+    c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
+    return c
 
 @st.cache
 def facebook_data_reader():
+    # govt = government_response_reader()
     resp = urlopen(download_from_hdx())
     zipfile = ZipFile(BytesIO(resp.read()))
     file = [i for i in zipfile.namelist() if 'movement' in i][0]
@@ -38,6 +49,7 @@ def facebook_data_reader():
     df['ds'] = pd.to_datetime(df['ds'])
     df['all_day_bing_tiles_visited_relative_change'] = df['all_day_bing_tiles_visited_relative_change']*100
     df['all_day_ratio_single_tile_users'] = df['all_day_ratio_single_tile_users']*100
+    # df = pd.merge(df,govt,on=['ds','country'])
     return df
 fb = facebook_data_reader()
 
@@ -64,7 +76,7 @@ else:
 
 # ----------COUNTRY & DEFAULT DICTIONARIES----------
 c_dict = {'Vietnam':'VNM','the Philippines':'PHL','Timor Leste':'TLS'}
-default_provinces = {'Vietnam':['Ha Noi','Ho Chi Minh','Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
+default_provinces = {'Vietnam':['Ha Noi','Ho Chi Minh','Da Nang'],'the Philippines':['Metropolitan Manila','Catanduanes'],'Timor Leste':'Dili Barat'} 
 default_cities = {'Vietnam':['Ha Giang','Quang Binh'],'the Philippines':['Quezon City','Tuguegarao City'],'Timor Leste':'Dili Barat'} 
 metric_dict = {'Mobility change':'all_day_bing_tiles_visited_relative_change','Staying put/sheltering in place':'all_day_ratio_single_tile_users'}
 metric_ylabel = {'Mobility change':'Change in Mobility (%)','Staying put/sheltering in place':'Facebook users staying put (%)'}
@@ -87,7 +99,16 @@ def facebook_data_filter(df,country):
         # .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     return df
 df = facebook_data_filter(fb,country)
-# st.write(f'{df.columns}')
+
+# ----------DEFINING A FUNCTION FOR ROLLING TOOLTIP-----------------------------
+
+def rolling(data,metric,column=None,color=None):
+    base = alt.Chart(data).encode(x=alt.X('ds:T', axis=alt.Axis(title='Date'))).properties(width=800)
+    pr = base.mark_line(interpolate='basis').encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),color=color)
+    line = base.mark_circle(color='pink',opacity=.5).encode(alt.Y('PolicyValue', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip='PolicyValue:N')
+    chart = alt.layer(line,pr).resolve_scale(y = 'independent').interactive(bind_y=False)
+    return chart
+g = government_response_reader()
 
 # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
 st.header(f'Analysis of mobility changes in {country}.')
@@ -102,10 +123,10 @@ if country!='Timor Leste':
         f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
         options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analyis_level_default[analysis][country])
         data = df[df[column].isin(area)].groupby([column,'ds']).mean().reset_index()
-        pr = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
-            y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
-            color=alt.Color(column,legend=alt.Legend(title=analysis_label[analysis]))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
-        st.write(pr)
+        data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+        color=alt.Color(column,legend=alt.Legend(title=metric_ylabel[metric]))
+        st.write(rolling(data,metric,column,color))
+
     else:
         ## COMPARISON GROUP 1
         default_prov1 = {'Vietnam':['Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
@@ -141,10 +162,13 @@ if country!='Timor Leste':
             .resample('1D').mean().reset_index()#.set_index('ds').resample('7D').mean().reset_index()
         df2['status'] = 'Group 2'
         data = pd.concat([df1,df2])
-        pr = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
-            y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
-            color=alt.Color('status',legend=alt.Legend(title='Comparison groups'))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
-        st.write(pr)
+        data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+        base = alt.Chart(data).encode(x='ds') #x=alt.X('ds', axis=alt.Axis(title='Date')),
+        line = base.mark_line(color='red').encode(y='PolicyValue:Q'
+)
+        color = alt.Color('status',legend=alt.Legend(title='Comparison groups'))
+        st.write(rolling(data,metric,color=color))
+
 else: 
     st.write(f'For {country}, data is only available for Dili Timur and Dili Barat.')
     analysis = st.multiselect('Select your area of interest',
@@ -154,6 +178,19 @@ else:
     tls = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
         y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
         color=alt.Color('polygon_name',legend=alt.Legend(title='Area'))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
+    # points = alt.Chart(data.head()).mark_point().encode(
+#     x='ds',
+#     y=metric_dict[metric]
+# )
+
+# text = points.mark_text(
+#     align='left',
+#     baseline='middle',
+#     dx=7
+# ).encode(
+#     text='ds'
+# )
+
     st.write(tls)
 
 # ----------DOWNLOADING DATA----------------------
@@ -167,5 +204,3 @@ def get_table_download_link_csv(df):
 # if st.button('Generate csv file to download'):
 st.subheader('Export data')
 st.markdown(f'Download the data used to generate this plot in a csv file by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
-# else:
-#     pass
