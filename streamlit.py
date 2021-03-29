@@ -175,23 +175,10 @@ else:
         options=['Dili Barat','Dili Timur'],
         default=['Dili Barat','Dili Timur'])
     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
-    tls = alt.Chart(data).mark_line().encode(x=alt.X('ds', axis=alt.Axis(title='Date')),
-        y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),
-        color=alt.Color('polygon_name',legend=alt.Legend(title='Area'))).properties(width=800).interactive( bind_y = False) #, size='c', color='c', tooltip=['a', 'b', 'c'])
-    # points = alt.Chart(data.head()).mark_point().encode(
-#     x='ds',
-#     y=metric_dict[metric]
-# )
+    data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
 
-# text = points.mark_text(
-#     align='left',
-#     baseline='middle',
-#     dx=7
-# ).encode(
-#     text='ds'
-# )
-
-    st.write(tls)
+    color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
+    st.write(rolling(data,metric,color=color))
 
 # ----------DOWNLOADING DATA----------------------
 
@@ -201,6 +188,5 @@ def get_table_download_link_csv(df):
     href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">here.</a>'
     return href
 
-# if st.button('Generate csv file to download'):
 st.subheader('Export data')
 st.markdown(f'Download the data used to generate this plot in a csv file by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
