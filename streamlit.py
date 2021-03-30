@@ -6,6 +6,7 @@ import requests
 import altair as alt
 import base64
 import io
+import datetime
 from vega_datasets import data
 import geopandas as gpd
 from io import BytesIO
@@ -26,7 +27,6 @@ def download_from_hdx():
     Function to download latest movement range maps from HDX.
     '''
     url = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1]['download_url']
-    # print('\nResource URL %s downloaded.' % (url))
     return url
 
 @st.cache
@@ -58,11 +58,9 @@ fb = facebook_data_reader()
 
 ''' # Can big data be used to monitor human mobility disruptions in real time?'''
 st.markdown("More than ever, 2020 highlighted that the incidence and aftermath of climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://data.humdata.org/dataset/movement-range-maps), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries. [_Raw data can be found here_](https://data.humdata.org/dataset/movement-range-maps).")
-# st.title(f'Country {country}')    
-# st.header('Start by selecting a country.')
-country = st.radio('Start by selecting a country from the following Pacific countries.',
+country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
     options=('Vietnam','the Philippines','Timor Leste'))
-metric = st.radio('What metric are you interested in monitoring?',
+metric = st.sidebar.radio('What metric are you interested in monitoring?',
     options=('Mobility change','Staying put/sheltering in place'))
 
 if country=='Vietnam':
@@ -96,18 +94,19 @@ def facebook_data_filter(df,country):
     else:
         adm1 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm1_who_ocha_20200911.shp')
         adm2 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm2_who_ocha_20200911.shp')
-        # df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
-        # .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     return df
 df = facebook_data_filter(fb,country)
 
-# ----------DEFINING A FUNCTION FOR ROLLING TOOLTIP-----------------------------
-
-def rolling(data,metric,column=None,color=None):
-    base = alt.Chart(data).encode(x=alt.X('ds:T', axis=alt.Axis(title='Date'))).properties(width=800)
+# ----------DEFINING A FUNCTION FOR ROLLING TOOLTIP-----------------------------  
+def rolling(data,metric,column=None,color=None,date_df=None):
+    base = alt.Chart(data).encode(x=alt.X('ds:T', axis=alt.Axis(title='Date'))).properties(width=800,height=250)
     pr = base.mark_line(interpolate='basis').encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),color=color)
     circle = base.mark_circle(opacity=.5).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2')))
+    rules = alt.Chart(date_df).mark_rule(strokeWidth=5,opacity=.5).encode(
+    x='Date:T',y=alt.Y('y',axis=None),
+    color=alt.Color('color:N', scale=None), tooltip='Event')
     chart = alt.layer(circle,pr).resolve_scale(y = 'independent',color='independent').interactive(bind_y=False)
+
     return chart
 g = government_response_reader()
 
@@ -115,18 +114,30 @@ g = government_response_reader()
 st.header(f'Analysis of mobility changes in {country}.')
 # ----------PROVINCE VISUALIZATION----------------------
 if country!='Timor Leste':
-    analysis = st.radio('At what level would you like to conduct your analysis?',
+  
+    analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
     options=('Provincial level','City/municipality level','Custom'))
     analyis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
+    
     if analysis!='Custom':
         column = analysis_level[analysis]
-        area = st.multiselect(
+        area = st.sidebar.multiselect(
         f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
         options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analyis_level_default[analysis][country])
         data = df[df[column].isin(area)].groupby([column,'ds']).mean().reset_index()
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel[metric]))
-        st.write(rolling(data,metric,column,color))
+        # d = st.sidebar.date_input("Enter a key date where a crisis-related event took place.",datetime.date(2020, 7, 6))
+        # d = [d]
+        date_df = pd.DataFrame({
+            'Date': ['2020-10-18'],
+            'Event': ['Flooding'],
+            })
+        date_df['Date'] = pd.to_datetime(date_df['Date'])
+        date_df['y']=100
+        date_df['color']='tomato'
+        st.write(rolling(data,metric,column=column,color=color,date_df=date_df))
+        # st.write(rules)
 
     else:
         ## COMPARISON GROUP 1
@@ -164,10 +175,9 @@ if country!='Timor Leste':
         df2['status'] = 'Group 2'
         data = pd.concat([df1,df2])
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-        base = alt.Chart(data).encode(x='ds') #x=alt.X('ds', axis=alt.Axis(title='Date')),
-        line = base.mark_line(color='red').encode(y='Policy Stringency:Q'
-)
         color = alt.Color('status',legend=alt.Legend(title='Comparison groups'))
+
+        
         st.write(rolling(data,metric,color=color))
 
 else: 
@@ -180,6 +190,10 @@ else:
 
     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
     st.write(rolling(data,metric,color=color))
+
+
+
+
 
 # ----------DOWNLOADING DATA----------------------
 
