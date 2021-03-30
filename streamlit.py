@@ -35,8 +35,9 @@ def government_response_reader():
     s=requests.get(url).content
     c=pd.read_csv(io.StringIO(s.decode('utf-8')))
     c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex']]
-    c.columns = ['CountryName', 'country', 'ds', 'PolicyValue']
+    c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency']
     c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
+    c['Stringency Metric'] = 'Oxford University Stringency Index'
     return c
 
 @st.cache
@@ -105,8 +106,8 @@ df = facebook_data_filter(fb,country)
 def rolling(data,metric,column=None,color=None):
     base = alt.Chart(data).encode(x=alt.X('ds:T', axis=alt.Axis(title='Date'))).properties(width=800)
     pr = base.mark_line(interpolate='basis').encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),color=color)
-    line = base.mark_circle(color='pink',opacity=.5).encode(alt.Y('PolicyValue', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip='PolicyValue:N')
-    chart = alt.layer(line,pr).resolve_scale(y = 'independent').interactive(bind_y=False)
+    circle = base.mark_circle(opacity=.5).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2')))
+    chart = alt.layer(circle,pr).resolve_scale(y = 'independent',color='independent').interactive(bind_y=False)
     return chart
 g = government_response_reader()
 
@@ -164,7 +165,7 @@ if country!='Timor Leste':
         data = pd.concat([df1,df2])
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
         base = alt.Chart(data).encode(x='ds') #x=alt.X('ds', axis=alt.Axis(title='Date')),
-        line = base.mark_line(color='red').encode(y='PolicyValue:Q'
+        line = base.mark_line(color='red').encode(y='Policy Stringency:Q'
 )
         color = alt.Color('status',legend=alt.Legend(title='Comparison groups'))
         st.write(rolling(data,metric,color=color))
