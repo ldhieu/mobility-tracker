@@ -56,7 +56,7 @@ fb = facebook_data_reader()
 
 # ----------INTRODUCTION-----------------------------
 
-''' # Can big data be used to monitor human mobility disruptions in real time?'''
+''' # Can big data be used to monitor human mobility disruptions in near-real time?'''
 st.markdown("More than ever, 2020 highlighted that the incidence and aftermath of climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://data.humdata.org/dataset/movement-range-maps), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries. [_Raw data can be found here_](https://data.humdata.org/dataset/movement-range-maps).")
 country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
     options=('Vietnam','the Philippines','Timor Leste'))
@@ -144,7 +144,7 @@ if country!='Timor Leste':
         default_prov1 = {'Vietnam':['Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
         default_cities1 = {'Vietnam':['Ha Giang'],'the Philippines':['Quezon City','Tuguegarao City'],'Timor Leste':'Dili Barat'} 
 
-        st.subheader(f'Comparison Group 1.')
+        st.sidebar.subheader(f'Comparison Group 1.')
         prov1 = st.sidebar.multiselect(
         f'Select provinces/centrally-controlled municipalities to include in comparison group 1.',
         options=tuple((df[analysis_level['Provincial level']].sort_values().unique()).reshape(1, -1)[0]),default = default_prov1[country])
@@ -156,7 +156,7 @@ if country!='Timor Leste':
         default_prov2 = {'Vietnam':['Ha Noi','Ho Chi Minh'],'the Philippines':'Catanduanes','Timor Leste':'Dili Barat'} 
         default_cities2 = {'Vietnam':['Quang Binh'],'the Philippines':['Quezon City','Tuguegarao City'],'Timor Leste':'Dili Barat'} 
 
-        st.subheader(f'Comparison Group 2.')
+        st.sidebar.subheader(f'Comparison Group 2.')
         prov2_default = ['Ha Noi','Ho Chi Minh']
         prov2 = st.sidebar.multiselect(
         f'Select provinces/centrally-controlled municipalities to include in comparison group 2.',
