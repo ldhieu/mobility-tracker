@@ -145,10 +145,10 @@ if country!='Timor Leste':
         default_cities1 = {'Vietnam':['Ha Giang'],'the Philippines':['Quezon City','Tuguegarao City'],'Timor Leste':'Dili Barat'} 
 
         st.subheader(f'Comparison Group 1.')
-        prov1 = st.multiselect(
+        prov1 = st.sidebar.multiselect(
         f'Select provinces/centrally-controlled municipalities to include in comparison group 1.',
         options=tuple((df[analysis_level['Provincial level']].sort_values().unique()).reshape(1, -1)[0]),default = default_prov1[country])
-        cities_in = st.multiselect(
+        cities_in = st.sidebar.multiselect(
         f'Select cities/muncipalities to include in comparison group 1.',
         options=tuple((df[analysis_level['City/municipality level']].sort_values().unique()).reshape(1, -1)[0]),default = None)
         
