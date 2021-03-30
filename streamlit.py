@@ -50,17 +50,18 @@ def facebook_data_reader():
     df['ds'] = pd.to_datetime(df['ds'])
     df['all_day_bing_tiles_visited_relative_change'] = df['all_day_bing_tiles_visited_relative_change']*100
     df['all_day_ratio_single_tile_users'] = df['all_day_ratio_single_tile_users']*100
-    # df = pd.merge(df,govt,on=['ds','country'])
     return df
 fb = facebook_data_reader()
 
 # ----------INTRODUCTION-----------------------------
 
 ''' # Can big data be used to monitor human mobility disruptions in near-real time?'''
-st.markdown("More than ever, 2020 highlighted that the incidence and aftermath of climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://data.humdata.org/dataset/movement-range-maps), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries. [_Raw data can be found here_](https://data.humdata.org/dataset/movement-range-maps).")
-country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
+st.markdown("More than ever, 2020 highlighted that the incidence and aftermath of climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://data.humdata.org/dataset/movement-range-maps), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries. [_Raw data can be found here_](https://data.humdata.org/dataset/movement-range-maps).\n\n")
+st.sidebar.markdown(f"Province and city/municipality names listed below are taken from the [Database of Global Administrative Areas (GADM)]('https://gadm.org/download_country_v3.html').\n\n")
+st.sidebar.subheader("Let's begin.")
+country = st.sidebar.radio('\nStart by selecting a country from the following Pacific countries.',
     options=('Vietnam','the Philippines','Timor Leste'))
-metric = st.sidebar.radio('What metric are you interested in monitoring?',
+metric = st.sidebar.radio('What mobility metric are you interested in monitoring?',
     options=('Mobility change','Staying put/sheltering in place'))
 
 if country=='Vietnam':
