@@ -31,7 +31,6 @@ def download_from_hdx(show_spinner=False):
     Function to download latest movement range maps from HDX.
     '''
     url = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1]['download_url']
-    # print('\nResource URL %s downloaded.' % (url))
     return url
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
@@ -40,14 +39,13 @@ def government_response_reader():
     s=requests.get(url).content
     c=pd.read_csv(io.StringIO(s.decode('utf-8')))
     c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex']]
-    c.columns = ['CountryName', 'country', 'ds', 'PolicyValue']
+    c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency']
     c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
     c['Stringency Metric'] = 'Oxford Stringency Index'
     return c
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def facebook_data_reader():
-    # govt = government_response_reader()
     resp = urlopen(download_from_hdx())
     zipfile = ZipFile(BytesIO(resp.read()))
     file = [i for i in zipfile.namelist() if 'movement' in i][0]
@@ -62,14 +60,8 @@ pac = read_pacific_typhoons().reset_index()
 pac['_y'] = -100
 pac['y'] = 100
 
-
 # ----------INTRODUCTION-----------------------------
 
-# col1, mid, col2 = st.beta_columns([1,1,1])
-# with col1:
-#     st.image('logo-covid.png', width=200)
-# with col2:
-#     st.write('A Name')
 html = " <a href='covid-19observatory.com'> <img src='https://covid-19observatory.com/static/assets/images/logo-covid.png' height=150> </a>"
 st.sidebar.markdown(html, unsafe_allow_html=True)
 ''' # Can big data be used to monitor human mobility disruptions in near-real time?'''
@@ -78,7 +70,7 @@ st.subheader("Let's begin.")
 '\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.**'
 country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
     options=('Vietnam','the Philippines','Timor Leste'))
-metric = st.radio('What metric are you interested in monitoring?',
+metric = st.sidebar.radio('What metric are you interested in monitoring?',
     options=('Mobility change','Staying put/sheltering in place'))
 
 if country=='Vietnam':
@@ -116,8 +108,6 @@ def facebook_data_filter(df,country):
     else:
         adm1 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm1_who_ocha_20200911.shp')
         adm2 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm2_who_ocha_20200911.shp')
-        # df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
-        # .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
     return df
 df = facebook_data_filter(fb,country)
 
@@ -147,28 +137,22 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
 g = government_response_reader()
 # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
 st.header(f'Analysis of mobility changes in {country}.')
-
-
 # ----------ALL BUT TIMOR LESTE----------------------
 if country!='Timor Leste':
-    viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions'])
+    viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
     analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
     options=('Provincial level','City/municipality level','Custom'))
     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
+    analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Catanduanes','Metropolitan Manila']}
     if analysis!='Custom':
         column = analysis_level[analysis]
         if analysis=='Provincial level':
-            # flood = st.sidebar.radio('Are you interested in an analysis of 2020 Pacific typhoons?',options = ('Yes','No'),index=0)
-            # if flood == 'Yes':
             flood_provinces = st.sidebar.radio('List only provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
             if flood_provinces=='Yes':
                 area = pac[pac['Country']==country]['Province'].sort_values().unique().reshape(1,-1)[0]
-                # print(df[column].sort_values().unique())
-                print(area)
-                print(analysis_level_default[analysis])
                 area = st.sidebar.multiselect(
-                f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
-            options=tuple(area),default=['Thua Thien Hue','Quang Binh'])
+                f'Only showing {analysis_label[analysis].lower()} that were affected by Pacific typhoons. Select as many of these as you would like to visualize and/or compare.',
+            options=tuple(area),default=analysis_flooding_default[country])
             else:
                 area = st.sidebar.multiselect(
                 f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
@@ -177,7 +161,6 @@ if country!='Timor Leste':
                 area = st.sidebar.multiselect(
                 f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
                 options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country])
-
         data = df[df[column].isin(area)]
         pac = pac[pac['Province'].apply(lambda x: x in data['VARNAME_1'].unique())]
         data =data.groupby([column,'ds']).mean().reset_index()
@@ -213,16 +196,13 @@ if country!='Timor Leste':
         df1['status'] = 'Group 1'
         
         df2 = df[~((df[analysis_level['Provincial level']].isin(prov2)) | (df[analysis_level['City/municipality level']].isin(cities_in)))].set_index('ds')\
-            .resample('1D').mean().reset_index()#.set_index('ds').resample('7D').mean().reset_index()
+            .resample('1D').mean().reset_index()
         df2['status'] = 'Group 2'
         data = pd.concat([df1,df2])
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-        base = alt.Chart(data).encode(x='ds') #x=alt.X('ds', axis=alt.Axis(title='Date')),
-        line = base.mark_line(color='red').encode(y='PolicyValue:Q'
-)
+        base = alt.Chart(data).encode(x='ds') 
+        line = base.mark_line(color='red').encode(y='PolicyValue:Q')
         color = alt.Color('status',legend=alt.Legend(title='Comparison groups'))
-
-        
         st.write(plotting(data,metric,color=color,country=country,viz=viz))
 ## -----------TIMOR LESTE--------------------
 else: 
@@ -245,7 +225,6 @@ def get_table_download_link_csv(df):
     href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">here.</a>'
     return href
 
-# if st.button('Generate csv file to download'):
 st.subheader('Export data')
 st.markdown(f'Download the data visualized in the plot above by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
 
@@ -255,7 +234,3 @@ st.markdown(f'Download the data visualized in the plot above by clicking {get_ta
 - Province and city/municipality names used are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html).
 - A spreadsheet containing all the weather events used in this app can be found [here](https://docs.google.com/spreadsheets/d/1RTvPgw29yTXi9GAAc8kSQAJ-3sQU7MqOMwZgbAEoG4E/edit#gid=0). Please [write to us](mkhan57@worldbank.org) with suggestions for addiitons to this spreadsheet.
 """
-
-
-
-# st.write(areas)
