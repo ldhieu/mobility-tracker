@@ -67,7 +67,7 @@ st.sidebar.markdown(html, unsafe_allow_html=True)
 ''' # Can big data be used to monitor human mobility disruptions in near-real time?'''
 st.markdown("2020 highlighted that the climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
 st.subheader("Let's begin.")
-'\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.**'
+'\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** Scroll to zoom in and out of the plot.'
 country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
     options=('Vietnam','the Philippines','Timor Leste'))
 metric = st.sidebar.radio('What metric are you interested in monitoring?',
