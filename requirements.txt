@@ -6,3 +6,4 @@ numpy==1.18.1
 hdx-python-api==4.7.4
 hdx-python-country==2.6.4
 hdx-python-utilities==2.5.1
+streamlit==0.79.0    
