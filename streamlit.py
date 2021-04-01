@@ -162,12 +162,12 @@ if country!='Timor Leste':
                 f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
                 options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country])
         data = df[df[column].isin(area)]
-        pac = pac[pac['Province'].apply(lambda x: x in data['VARNAME_1'].unique())]
+        pac = pac[pac['Province'].apply(lambda x: x in data[column].unique())]
         data =data.groupby([column,'ds']).mean().reset_index()
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel[metric]))
         st.write(plotting(data,metric,column=column,color=color,viz=viz,country=country,pac=pac))
-            # st.write(rules)
+        # st.slider
     else:
 ## -----------COMPARISON GROUP 1--------------------
         default_prov1 = {'Vietnam':['Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
