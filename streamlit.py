@@ -144,17 +144,17 @@ if country!='Timor Leste':
     analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
     options=('Provincial level','City/municipality level','Custom'))
     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
-    analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Catanduanes','Metropolitan Manila']}
+    analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Albay','Catanduanes','Metropolitan Manila']}
     if analysis!='Custom':
         column = analysis_level[analysis]
         if analysis=='Provincial level':
-            flood_provinces = st.sidebar.radio('List only provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
+            flood_provinces = st.sidebar.radio('Filter options below to only include provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
             if flood_provinces=='Yes':
                 area = pac[pac['Country']==country]['Province'].sort_values().unique().reshape(1,-1)[0]
                 print(area)
                 print(df[column].sort_values().unique())
                 area = st.sidebar.multiselect(
-                f'Only showing {analysis_label[analysis].lower()} that were affected by Pacific typhoons. Select as many of these as you would like to visualize and/or compare.',
+                f'This dropdown only contains {analysis_label[analysis].lower()} that were affected by Pacific typhoons. Select as many of these as you would like to visualize and/or compare.',
             options=tuple(area),default=analysis_flooding_default[country])
             else:
                 area = st.sidebar.multiselect(
