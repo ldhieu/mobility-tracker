@@ -152,31 +152,31 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
     except:
         pass
     
-    nearest = alt.selection(type='single', nearest=True, on='mouseover',
-                            fields=['ds'], empty='none')
-    selectors = alt.Chart(data).mark_point().encode(
-        x=alt.X('ds', axis=alt.Axis(title='Date')),
-        opacity=alt.value(0),
-    ).add_selection(
-        nearest
-    )
+    # nearest = alt.selection(type='single', nearest=True, on='mouseover',
+    #                         fields=['ds'], empty='none')
+    # selectors = alt.Chart(data).mark_point().encode(
+    #     x=alt.X('ds', axis=alt.Axis(title='Date')),
+    #     opacity=alt.value(0),
+    # ).add_selection(
+    #     nearest
+    # )
 
-    line = alt.Chart(data).mark_line(interpolate='basis').encode(
-        x=alt.X('ds', axis=alt.Axis(title='Date')),
-        y='Policy Stringency'
-        # color='category:N'
-    )
+    # line = alt.Chart(data).mark_line(interpolate='basis').encode(
+    #     x=alt.X('ds', axis=alt.Axis(title='Date')),
+    #     y='Policy Stringency'
+    #     # color='category:N'
+    # )
 
     # Draw a rule at the location of the selection
-    rule = alt.Chart(data).mark_rule(color='gray').encode(
-        x='ds',
-    ).transform_filter(
-        nearest
-    )
+    # rule = alt.Chart(data).mark_rule(color='gray').encode(
+    #     x='ds',
+    # ).transform_filter(
+    #     nearest
+    # )
 
-    text = line.mark_text(align='left', dx=5, dy=-5).encode(
-    text=alt.condition(nearest, 'Policy Stringency', alt.value(' '))
-)
+#     text = line.mark_text(align='left', dx=5, dy=-5).encode(
+#     text=alt.condition(nearest, 'Policy Stringency', alt.value(' '))
+# )
 
     if set(viz) == set(['COVID-19 Policy Restrictions']):
         chart = alt.layer(circle,pr).interactive(bind_y=False).resolve_scale(y = 'independent',color='independent').configure_axis(grid=False)#.configure_view(strokeOpacity=0)
