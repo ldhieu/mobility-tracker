@@ -112,11 +112,23 @@ def facebook_data_filter(df,country):
     return df
 df = facebook_data_filter(fb,country)
 
+def time_widget():
+    time_range = st.slider(
+     "Select the date range you would like to visualize.",
+     data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime(),(data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime()),
+     format="MM/DD/YY")
+    return time_range
+
 # ----------DEFINING A FUNCTION FOR PLOTTING TOOLTIP-----------------------------  
 def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
     date_df = typhoon_dict[country]
     date_df['y'] = 100
-    base = alt.Chart(data).encode(x=alt.X('ds:T', axis=alt.Axis(title='Date'))).properties(width=800,height=250)
+    # domain = [data['ds'].min(),data['ds'].max()]
+    # domain = ["2019-01-01", "2019-12-31"]
+    base = alt.Chart(data).encode(x=alt.X('ds', axis=alt.Axis(title='Date'),
+    # timeUnit='yearmonthdate', scale=alt.Scale(domain=domain)\
+    ))\
+        .properties(width=800,height=250)
     pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),color=color,tooltip=[metric_dict[metric]])
     circle = base.mark_circle(opacity=.5,size=15).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2')))
     try:
@@ -151,8 +163,6 @@ if country!='Timor Leste':
             flood_provinces = st.sidebar.radio('Filter options below to only include provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
             if flood_provinces=='Yes':
                 area = pac[pac['Country']==country]['Province'].sort_values().unique().reshape(1,-1)[0]
-                print(area)
-                print(df[column].sort_values().unique())
                 area = st.sidebar.multiselect(
                 f'This dropdown only contains {analysis_label[analysis].lower()} that were affected by Pacific typhoons. Select as many of these as you would like to visualize and/or compare.',
             options=tuple(area),default=analysis_flooding_default[country])
@@ -169,8 +179,9 @@ if country!='Timor Leste':
         data =data.groupby([column,'ds']).mean().reset_index()
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel[metric]))
-        st.write(plotting(data,metric,column=column,color=color,viz=viz,country=country,pac=pac))
-        # st.slider
+        # st.write(plotting(data,metric,column=column,color=color,viz=viz,country=country,pac=pac)
+        plot_slot = st.empty()
+
     else:
 ## -----------COMPARISON GROUP 1--------------------
         default_prov1 = {'Vietnam':['Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
@@ -206,7 +217,8 @@ if country!='Timor Leste':
         base = alt.Chart(data).encode(x='ds') 
         line = base.mark_line(color='red').encode(y='PolicyValue:Q')
         color = alt.Color('status',legend=alt.Legend(title='Comparison groups'))
-        st.write(plotting(data,metric,color=color,country=country,viz=viz))
+        # st.write(plotting(data,metric,color=color,country=country,viz=viz))
+        plot_slot = st.empty()
 ## -----------TIMOR LESTE--------------------
 else: 
     viz = ['COVID-19 Restrictions']
@@ -218,7 +230,12 @@ else:
     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
 
     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
-    st.write(plotting(data,metric,color=color,country=country,viz=viz))
+    # st.write(plotting(data,metric,color=color,country=country,viz=viz))
+    plot_slot = st.empty()
+time_range = time_widget()
+data = data[(data['ds']>=time_range[0])&(data['ds']<=time_range[1])]
+plot_slot.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
+
 
 # ----------DOWNLOADING DATA----------------------
 
@@ -237,3 +254,4 @@ st.markdown(f'Download the data visualized in the plot above by clicking {get_ta
 - Province and city/municipality names used are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html).
 - A spreadsheet containing all the weather events used in this app can be found [here](https://docs.google.com/spreadsheets/d/1RTvPgw29yTXi9GAAc8kSQAJ-3sQU7MqOMwZgbAEoG4E/edit#gid=0). Please [write to us](mailto:mkhan57@worldbank.org) with suggestions for addiitons to this spreadsheet.
 """
+
