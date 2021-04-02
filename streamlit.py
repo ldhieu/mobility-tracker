@@ -44,23 +44,14 @@ def government_response_reader():
     char = 400
     c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
     c['Stringency Metric'] = 'Oxford Stringency Index'
-    c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['Workplace closures'] = c['Workplace closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['Cancellations of public events'] = c['Cancellations of public events'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['Restrictions on gatherings'] = c['Restrictions on gatherings'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['Public transport closures'] = c['Public transport closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['Stay-at-home requirements'] = c['Stay-at-home requirements'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['Internal movement restrictions'] = c['Internal movement restrictions'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('.')[0])
-    # c['C1_Notes'] = 'SCHOOL CLOSURES: ' + c['C1_Notes'].fillna('No new restrictions')
-    # c['C2_Notes'] = 'WORKPLACE CLOSURES: ' + c['C2_Notes'].fillna('No new restrictions')
-    # c['C3_Notes'] = 'CANCELLATIONS OF PUBLIC EVENTS: ' + c['C3_Notes'].fillna('No new restrictions')
-    # c['C4_Notes'] = 'RESTRICTIONS ON GATHERINGS: ' + c['C4_Notes'].fillna('No new restrictions')
-    # c['C5_Notes'] = 'PUBLIC TRANSPORT CLOSURES: ' + c['C5_Notes'].fillna('No new restrictions')
-    # c['C6_Notes'] = 'STAY-AT-HOME REQUIREMENTS: ' + c['C6_Notes'].fillna('No new restrictions')
-    # c['C7_Notes'] = 'INTERNAL MOVEMENT RESTRICTIONS: '+ c['C7_Notes'].fillna('No new restrictions')
-    # c['C8_Notes'] = 'INTERNATIONAL TRAVEL CONTROLS: ' + c['C8_Notes'].fillna('No new restrictions')
-    # c['Notes'] = c['C1_Notes'] + '\n\n' + c['C2_Notes'] + '\n\n' + c['C3_Notes'] + '\n\n' + c['C4_Notes'] + '\n\n' + c['C5_Notes'] + '\n\n' + c['C6_Notes'] + '\n\n' + c['C7_Notes'] + '\n\n' + c['C8_Notes'] 
+    c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Workplace closures'] = c['Workplace closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Cancellations of public events'] = c['Cancellations of public events'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Restrictions on gatherings'] = c['Restrictions on gatherings'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Public transport closures'] = c['Public transport closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Stay-at-home requirements'] = c['Stay-at-home requirements'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Internal movement restrictions'] = c['Internal movement restrictions'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
     return c
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
@@ -72,12 +63,11 @@ def facebook_data_reader():
     df['ds'] = pd.to_datetime(df['ds'])
     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
     df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
-    print(df['Change in Mobility'])
     return df
 
 fb = facebook_data_reader()
 pac = read_pacific_typhoons().reset_index()
-pac['_y'] = -100
+pac['_y'] = 0
 pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
@@ -85,9 +75,9 @@ pac['y'] = 100
 html = " <a href='covid-19observatory.com'> <img src='https://covid-19observatory.com/static/assets/images/logo-covid.png' height=150> </a>"
 st.sidebar.markdown(html, unsafe_allow_html=True)
 ''' # Can big data be used to monitor human mobility disruptions in near-real time?'''
-st.markdown("2020 highlighted that the climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
+st.markdown("2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
 st.subheader("Let's begin.")
-'\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** Scroll to zoom in and out of the plot.'
+'\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** **Scroll** to zoom in and out of the plot.'
 country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
     ('Vietnam','the Philippines','Timor Leste'),help='At the moment, only a few Pacific countries are visualized on this site. Please [write to us](mailto:mkhan57@worldbank.org) if you would like us to add other countries supported by Facebook onto the site.')
 metric = st.sidebar.radio('What metric are you interested in monitoring?',
@@ -105,10 +95,11 @@ else:
 
 # ----------COUNTRY & DEFAULT DICTIONARIES----------
 c_dict = {'Vietnam':'VNM','the Philippines':'PHL','Timor Leste':'TLS'}
-default_provinces = {'Vietnam':['Ha Noi','Ho Chi Minh','Da Nang'],'the Philippines':['Metropolitan Manila','Albay'],'Timor Leste':'Dili Barat'} 
+default_provinces = {'Vietnam':['Ha Noi','Thua Thien Hue','Da Nang'],'the Philippines':['Metropolitan Manila','Albay'],'Timor Leste':'Dili Barat'} 
 default_cities = {'Vietnam':['Ha Giang','Hue'],'the Philippines':['Quezon City','Tuguegarao City','Barili'],'Timor Leste':'Dili Barat'} 
 metric_dict = {'Mobility change':'Change in Mobility','Staying put/sheltering in place':'Staying Put'}
-metric_ylabel = {'Mobility change':'Change in Mobility (%)','Staying put/sheltering in place':'Facebook users staying put (%)'}
+metric_ylabel = {'Mobility change':' Change in Mobility (from baseline) (%)','Staying put/sheltering in place':'Facebook users staying put (%)'}
+metric_ylabel_full = {'Mobility change':'Change in Mobility','Staying put/sheltering in place':'Facebook users staying put (%)'}
 analysis_label = {'Provincial level':'Provinces','City/municipality level':'Cities/municipalities','Custom':'Affected'}
 analysis_level = {'Provincial level':prov_column,'City/municipality level':city_column,'Custom':None}
 typhoon_dict = {'Vietnam':pd.DataFrame({'Date': ['2020-10-05','2020-10-09', '2020-10-11','2020-10-13','2020-10-24','2020-10-27','2020-11-5','2020-11-9','2020-11-14'],'Event': ['Tropical Depression','Tropical Storm Linfa', 'Tropical Storm Nangka','Tropical Depression Ofel','Typhoon Saudel','Typhoon Molave','Typhoon Goni','Tropical Storm Etau','Typhoon Vamco']}),
@@ -142,13 +133,17 @@ def time_widget():
 def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
     date_df = typhoon_dict[country]
     date_df['y'] = 100
+    
     base = alt.Chart(data).encode(x=alt.X('ds', axis=alt.Axis(title='Date'),
     ))\
-        .properties(width=800,height=250)
-    pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric])),color=color,tooltip=[metric_dict[metric]])
-    circle = base.mark_circle(opacity=.5,size=15).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2')))
+        .properties(width=700,height=300)
+    pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric]), scale=alt.Scale(domain=([-100,100]))),color=color,tooltip=[metric_dict[metric]])
+    circle = base.mark_circle(opacity=.5,size=20).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2'),legend=alt.Legend(orient='bottom')))
     try:
-        rules = alt.Chart(pac.reset_index()).mark_rect(opacity=0.3,color='tomato').encode(tooltip=['Province','Event'],x='start_date',x2='end_date',y2='y',y='_y')
+        pac['Disaster Event'] = 'Pacific Typhoon'
+        rules = alt.Chart(pac.reset_index()).mark_rect(opacity=0.3,).encode(tooltip=['Province','Event'],x='start_date',x2='end_date',y2='y',y='_y',color=alt.Color('Disaster Event',
+        legend=alt.Legend(orient='bottom'),
+        scale=alt.Scale(scheme='reds')))
     except:
         pass
     
@@ -194,7 +189,7 @@ g = government_response_reader()
 st.header(f'Analysis of mobility changes in {country}.')
 # ----------ALL BUT TIMOR LESTE----------------------
 if country!='Timor Leste':
-    viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize. COVID-19 policy restrictions will show up as pale green markers, and pacific typhoons will show up as red vertical lines.',options=['COVID-19 Policy Restrictions','Pacific Typhoons'],default=['COVID-19 Policy Restrictions','Pacific Typhoons'],help='**COVID-19 Policy Restrictions** are an indicator of the stringency of mobility restrictions put in place by governments and are measured here using the [Oxford Coronavirus Government Response Tracker (OXCGRT)](https://www.bsg.ox.ac.uk/research/research-projects/covid-19-government-response-tracker), between 0 and 100.\n\n Note that Pacific Tyhpoons analysis is only supported for provincial analysis at the moment.')
+    viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.\n\n',options=['COVID-19 Policy Restrictions','Pacific Typhoons'],default=['COVID-19 Policy Restrictions','Pacific Typhoons'],help='**COVID-19 Policy Restrictions** are an indicator of the stringency of mobility restrictions put in place by governments and are measured here using the [Oxford Coronavirus Government Response Tracker (OXCGRT)](https://www.bsg.ox.ac.uk/research/research-projects/covid-19-government-response-tracker), between 0 and 100.\n\n Note that Pacific Tyhpoons analysis is only supported for provincial analysis at the moment.')
     analysis = st.sidebar.radio('At what administrative level would you like to conduct your analysis?',
     options=('Provincial level','City/municipality level','Custom'),help="The 'custom' option enables you to create two groups of administrative units from multiple levels, and compare them.")
     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
@@ -220,7 +215,7 @@ if country!='Timor Leste':
         pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
         data = data.groupby([column,'ds']).mean().reset_index()
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-        color=alt.Color(column,legend=alt.Legend(title=metric_ylabel[metric]))
+        color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
 
     else:
@@ -250,9 +245,7 @@ if country!='Timor Leste':
         df2 = df[~((df[analysis_level['Provincial level']].isin(prov2)) | (df[analysis_level['City/municipality level']].isin(cities_ex)))]
         in_1 = (pac['Province'].isin(prov1))
         in_2 = (pac['Province'].isin(prov2))
-        pac = pac[in_1 | in_2]
-        print(pac[in_1])
-        print(pac[in_2])        
+        pac = pac[in_1 | in_2]   
         df1 = df1.set_index('ds')\
             .resample('1D').mean().reset_index()#.set_index('ds').resample('7D').mean().reset_index()
         df1['status'] = 'Group 1'        
@@ -264,7 +257,7 @@ if country!='Timor Leste':
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
         base = alt.Chart(data).encode(x='ds') 
         line = base.mark_line(color='red').encode(y='PolicyValue:Q')
-        color = alt.Color('status',legend=alt.Legend(title='Comparison groups'))
+        color = alt.Color('status',legend=alt.Legend(title='Comparison groups',orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
 ## -----------TIMOR LESTE--------------------
 else: 
@@ -276,7 +269,7 @@ else:
     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
 
-    color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
+    color = alt.Color('polygon_name',legend=alt.Legend(title='Area'),scale=alt.Scale(scheme='magma',orient='bottom'))
     plot_slot = st.empty()
 time_range = time_widget()
 data = data[(data['ds']>=time_range[0])&(data['ds']<=time_range[1])]
