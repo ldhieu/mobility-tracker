@@ -60,6 +60,7 @@ def facebook_data_reader():
     zipfile = ZipFile(BytesIO(resp.read()))
     file = [i for i in zipfile.namelist() if 'movement' in i][0]
     df = pd.read_csv(zipfile.open(file),sep='\t')
+    df = df[df['country'].isin(['VNM','TLS','PHL'])]
     df['ds'] = pd.to_datetime(df['ds'])
     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
     df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
@@ -132,12 +133,16 @@ def time_widget():
 # ----------DEFINING A FUNCTION FOR PLOTTING TOOLTIP-----------------------------  
 def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
     date_df = typhoon_dict[country]
+    if metric == 'Staying put/sheltering in place':
+        domain = [0,100]
+    else:
+        domain=[-100,100]
     date_df['y'] = 100
-    
+    print(metric)
     base = alt.Chart(data).encode(x=alt.X('ds', axis=alt.Axis(title='Date'),
     ))\
         .properties(width=700,height=300)
-    pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric]), scale=alt.Scale(domain=([-100,100]))),color=color,tooltip=[metric_dict[metric]])
+    pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric]), scale=alt.Scale(domain=domain)),color=color,tooltip=[metric_dict[metric]])
     circle = base.mark_circle(opacity=.5,size=20).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2'),legend=alt.Legend(orient='bottom')))
     try:
         pac['Disaster Event'] = 'Pacific Typhoon'
@@ -146,52 +151,26 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
         scale=alt.Scale(scheme='reds')))
     except:
         pass
-    
-    # nearest = alt.selection(type='single', nearest=True, on='mouseover',
-    #                         fields=['ds'], empty='none')
-    # selectors = alt.Chart(data).mark_point().encode(
-    #     x=alt.X('ds', axis=alt.Axis(title='Date')),
-    #     opacity=alt.value(0),
-    # ).add_selection(
-    #     nearest
-    # )
-
-    # line = alt.Chart(data).mark_line(interpolate='basis').encode(
-    #     x=alt.X('ds', axis=alt.Axis(title='Date')),
-    #     y='Policy Stringency'
-    #     # color='category:N'
-    # )
-
-    # Draw a rule at the location of the selection
-    # rule = alt.Chart(data).mark_rule(color='gray').encode(
-    #     x='ds',
-    # ).transform_filter(
-    #     nearest
-    # )
-
-#     text = line.mark_text(align='left', dx=5, dy=-5).encode(
-#     text=alt.condition(nearest, 'Policy Stringency', alt.value(' '))
-# )
-
-    if set(viz) == set(['COVID-19 Policy Restrictions']):
-        chart = alt.layer(circle,pr).interactive(bind_y=False).resolve_scale(y = 'independent',color='independent').configure_axis(grid=False)#.configure_view(strokeOpacity=0)
+    if set(viz) == set(['COVID-19 Restrictions']):
+        chart = alt.layer(circle,pr).interactive(bind_y=False).resolve_scale(y = 'independent',color='independent').configure_axis(grid=False).configure_view(strokeOpacity=0)
     if set(viz)==set(['Pacific Typhoons']):
         chart = alt.layer(pr,rules).interactive(bind_y=False).resolve_scale(color='independent').configure_axis(
     grid=False)#.configure_view(strokeOpacity=0)
-    if set(viz)==set(['COVID-19 Policy Restrictions','Pacific Typhoons']):
+    if set(viz)==set(['COVID-19 Restrictions','Pacific Typhoons']):
         chart = alt.layer(circle,rules).interactive(bind_y=False).resolve_scale(color='independent')#.configure_axis(grid=False)#.configure_view(strokeOpacity=0)
-        chart = alt.layer(chart,pr).resolve_scale(color='independent',y='independent').configure_axis(
-    grid=False)#.configure_view(strokeOpacity=0)
+        chart = alt.layer(chart,pr).resolve_scale(color='independent',y='independent').configure_axis(grid=False)#.configure_view(strokeOpacity=0)
     return chart
 
 g = government_response_reader()
 # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
 st.header(f'Analysis of mobility changes in {country}.')
+viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
+
 # ----------ALL BUT TIMOR LESTE----------------------
 if country!='Timor Leste':
-    viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.\n\n',options=['COVID-19 Policy Restrictions','Pacific Typhoons'],default=['COVID-19 Policy Restrictions','Pacific Typhoons'],help='**COVID-19 Policy Restrictions** are an indicator of the stringency of mobility restrictions put in place by governments and are measured here using the [Oxford Coronavirus Government Response Tracker (OXCGRT)](https://www.bsg.ox.ac.uk/research/research-projects/covid-19-government-response-tracker), between 0 and 100.\n\n Note that Pacific Tyhpoons analysis is only supported for provincial analysis at the moment.')
-    analysis = st.sidebar.radio('At what administrative level would you like to conduct your analysis?',
-    options=('Provincial level','City/municipality level','Custom'),help="The 'custom' option enables you to create two groups of administrative units from multiple levels, and compare them.")
+    # viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
+    analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
+    options=('Provincial level','City/municipality level','Custom'))
     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
     analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Albay','Catanduanes','Metropolitan Manila']}
     if analysis!='Custom':
@@ -261,18 +240,17 @@ if country!='Timor Leste':
         plot_slot = st.empty()
 ## -----------TIMOR LESTE--------------------
 else: 
-    viz = ['COVID-19 Policy Restrictions']
+    # viz = ['COVID-19 Restrictions']
     st.write(f'For {country}, data is only available for Dili Timur and Dili Barat.')
-    analysis = st.multiselect('Select your area of interest',
+    analysis = st.sidebar.multiselect('Select your area of interest',
         options=['Dili Barat','Dili Timur'],
         default=['Dili Barat','Dili Timur'])
     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-
-    color = alt.Color('polygon_name',legend=alt.Legend(title='Area'),scale=alt.Scale(scheme='magma',orient='bottom'))
-    plot_slot = st.empty()
-time_range = time_widget()
-data = data[(data['ds']>=time_range[0])&(data['ds']<=time_range[1])]
+    pac = pac[pac['Province'].isin(analysis)]
+    color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
+    plot_slot=st.empty()
+    # st.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
 
 plot_slot.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
 # ----------DOWNLOADING DATA----------------------
