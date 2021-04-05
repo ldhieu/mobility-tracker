@@ -50,6 +50,7 @@ def facebook_data_reader():
     zipfile = ZipFile(BytesIO(resp.read()))
     file = [i for i in zipfile.namelist() if 'movement' in i][0]
     df = pd.read_csv(zipfile.open(file),sep='\t')
+    df = df[df['country'].isin(['VNM','TLS','PHL'])]
     df['ds'] = pd.to_datetime(df['ds'])
     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
     df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
@@ -122,7 +123,6 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
         rules = alt.Chart(pac.reset_index()).mark_rect(opacity=0.3,color='tomato').encode(tooltip=['Province','Event'],x='start_date',x2='end_date',y2='y',y='_y')
     except:
         pass
-    
     if set(viz) == set(['COVID-19 Restrictions']):
         chart = alt.layer(circle,pr).interactive(bind_y=False).resolve_scale(y = 'independent',color='independent').configure_axis(grid=False).configure_view(strokeOpacity=0)
     if set(viz)==set(['Pacific Typhoons']):
@@ -137,9 +137,11 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
 g = government_response_reader()
 # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
 st.header(f'Analysis of mobility changes in {country}.')
+viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
+
 # ----------ALL BUT TIMOR LESTE----------------------
 if country!='Timor Leste':
-    viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
+    # viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
     analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
     options=('Provincial level','City/municipality level','Custom'))
     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
@@ -206,16 +208,17 @@ if country!='Timor Leste':
         st.write(plotting(data,metric,color=color,country=country,viz=viz))
 ## -----------TIMOR LESTE--------------------
 else: 
-    viz = ['COVID-19 Restrictions']
+    # viz = ['COVID-19 Restrictions']
     st.write(f'For {country}, data is only available for Dili Timur and Dili Barat.')
-    analysis = st.multiselect('Select your area of interest',
+    analysis = st.sidebar.multiselect('Select your area of interest',
         options=['Dili Barat','Dili Timur'],
         default=['Dili Barat','Dili Timur'])
     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-
+    pac = pac[pac['Province'].isin(analysis)]
+    print(pac.head())
     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
-    st.write(plotting(data,metric,color=color,country=country,viz=viz))
+    st.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
 
 # ----------DOWNLOADING DATA----------------------
 
