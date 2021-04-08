@@ -41,7 +41,7 @@ def government_response_reader():
     c=pd.read_csv(io.StringIO(s.decode('utf-8')))
     c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex','C1_Notes','C2_Notes','C3_Notes','C4_Notes','C5_Notes','C6_Notes','C7_Notes','C8_Notes']]
     c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls']
-    char = 400
+    char = 300
     c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
     c['Stringency Metric'] = 'Oxford Stringency Index'
     c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
@@ -73,7 +73,7 @@ pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
 
-html = " <a href='covid-19observatory.com'> <img src='https://covid-19observatory.com/static/assets/images/logo-covid.png' height=150> </a>"
+html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
 st.sidebar.markdown(html, unsafe_allow_html=True)
 ''' # Can big data be used to monitor human mobility disruptions in near-real time?'''
 st.markdown("2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
