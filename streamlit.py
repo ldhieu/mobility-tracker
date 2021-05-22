@@ -72,10 +72,10 @@ pac['_y'] = 0
 pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
+st.title("Can big data be used to monitor human mobility disruptions in near-real time?")
 
 html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
 st.sidebar.markdown(html, unsafe_allow_html=True)
-st.title("Can big data be used to monitor human mobility disruptions in near-real time?")
 st.markdown('')
 st.markdown("2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
 st.subheader("Let's begin.")
