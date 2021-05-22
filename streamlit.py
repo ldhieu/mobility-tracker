@@ -266,11 +266,12 @@ def get_table_download_link_csv(df):
 st.subheader('Export data')
 st.markdown(f'Download the data visualized in the plot above by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
 
-"""
+str = """
 ### Data Sources
 - Raw data for Facebook's Movement Range maps can be found [on the Humanitarian Data Exchange](https://data.humdata.org/dataset/movement-range-maps).
 - Province and city/municipality names used are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html).
 - COVID-19 Policy Restrictions data can be found in the [Oxford Coronavirus Government Response Tracker (OXCGRT)](https://www.bsg.ox.ac.uk/research/research-projects/covid-19-government-response-tracker)
 - A spreadsheet containing all the weather events used in this app can be found [here](https://docs.google.com/spreadsheets/d/1RTvPgw29yTXi9GAAc8kSQAJ-3sQU7MqOMwZgbAEoG4E/edit#gid=0). Please [write to us](mailto:mkhan57@worldbank.org) with suggestions for addiitons to this spreadsheet.
 """
+st.markdown(str)
 
