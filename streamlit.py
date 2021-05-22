@@ -73,17 +73,19 @@ pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
 st.title("Can big data be used to monitor human mobility disruptions in near-real time?")
-
-html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
-st.sidebar.markdown(html, unsafe_allow_html=True)
 st.markdown('')
 st.markdown("2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
 st.subheader("Let's begin.")
 '\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** **Scroll** to zoom in and out of the plot.'
+html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
+
+st.sidebar.markdown(html, unsafe_allow_html=True)
+
 country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
     ('Vietnam','the Philippines','Timor Leste'),help='At the moment, only a few Pacific countries are visualized on this site. Please [write to us](mailto:mkhan57@worldbank.org) if you would like us to add other countries supported by Facebook onto the site.')
 metric = st.sidebar.radio('What metric are you interested in monitoring?',
     options=('Mobility change','Staying put/sheltering in place'),help='The **Change in Movement** metric looks at how much people are moving around and compares it to a baseline period that predates most social distancing measures. The **Stay Put** metric looks at the fraction of the population that appears to stay within a small area surrounding their home for an entire day.')
+
 
 if country=='Vietnam':
     prov_column = 'VARNAME_1'
