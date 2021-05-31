@@ -75,7 +75,7 @@ pac['y'] = 100
 # col1, col2 = st.beta_columns(2)
 st.markdown("<h1 style='text-align: center; color: red;'>Can big data be used to monitor human mobility disruptions in near-real time?</h1>", unsafe_allow_html=True)
 '''
-## 
+#  
 2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.
 '''
 # st.markdown('')
