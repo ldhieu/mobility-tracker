@@ -19,7 +19,6 @@ except:
     pass
 from hdx.data.dataset import Dataset
 # or: requests.get(url).content
-st.header("Can big data be used to monitor human mobility disruptions in near-real time?")
 
 # ----------READING FACEBOOK DATA--------------------
 def read_pacific_typhoons():
@@ -73,9 +72,11 @@ pac['_y'] = 0
 pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
-st.header("Can big data be used to monitor human mobility disruptions in near-real time?")
+'''
+# Can big data be used to monitor human mobility disruptions in near-real time?")
+2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.
+'''
 # st.markdown('')
-st.markdown("2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.")
 st.subheader("Let's begin.")
 '\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** **Scroll** to zoom in and out of the plot.'
 html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
