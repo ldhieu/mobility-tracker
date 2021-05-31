@@ -73,6 +73,7 @@ pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
 # col1, col2 = st.beta_columns(2)
+st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
 '''
 # Can big data be used to monitor human mobility disruptions in near-real time?
 ## 
