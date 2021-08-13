@@ -35,8 +35,6 @@ def download_from_hdx(show_spinner=False):
     urls = [i['download_url'] for i in names]
     return urls
 
-print(download_from_hdx())
-
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def government_response_reader():
     url = ('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest_withnotes.csv')
@@ -100,12 +98,15 @@ metric = st.sidebar.radio('What metric are you interested in monitoring?',
 
 
 if country=='Vietnam':
+    nat_column = 'country'
     prov_column = 'VARNAME_1'
     city_column = 'VARNAME_2'
 elif country == 'Timor Leste':
+    nat_column = 'country_x'
     prov_column = 'polygon_name'
     city_column = 'polygon_name'
 else:
+    nat_column = 'country'
     prov_column = 'NAME_1'
     city_column = 'NAME_2'
 
@@ -117,7 +118,7 @@ metric_dict = {'Mobility change':'Change in Mobility','Staying put/sheltering in
 metric_ylabel = {'Mobility change':' Change in Mobility (from baseline) (%)','Staying put/sheltering in place':'Facebook users staying put (%)'}
 metric_ylabel_full = {'Mobility change':'Change in Mobility','Staying put/sheltering in place':'Facebook users staying put (%)'}
 analysis_label = {'Provincial level':'Provinces','City/municipality level':'Cities/municipalities','Custom':'Affected'}
-analysis_level = {'Provincial level':prov_column,'City/municipality level':city_column,'Custom':None}
+analysis_level = {'National level':nat_column,'Provincial level':prov_column,'City/municipality level':city_column,'Custom':None}
 typhoon_dict = {'Vietnam':pd.DataFrame({'Date': ['2020-10-05','2020-10-09', '2020-10-11','2020-10-13','2020-10-24','2020-10-27','2020-11-5','2020-11-9','2020-11-14'],'Event': ['Tropical Depression','Tropical Storm Linfa', 'Tropical Storm Nangka','Tropical Depression Ofel','Typhoon Saudel','Typhoon Molave','Typhoon Goni','Tropical Storm Etau','Typhoon Vamco']}),
                 'the Philippines':pd.DataFrame({'Date': ['2020-5-8','2020-6-10', '2020-7-11','2020-7-30','2020-7-31','2020-8-6','2020-8-9','2020-8-9','2020-8-16','2020-8-20','2020-8-27','2020-8-30','2020-9-10','2020-9-15','2020-9-19','2020-9-25','2020-10-4','2020-10-6','2020-10-11','2020-10-13','2020-10-18','2020-10-19','2020-10-22','2020-10-26','2020-10-30','2020-11-6','2020-11-8','2020-12-18'],'Event': ['Typhoon Vonggong (Ango)','Tropical Storm Nuri (Butchoy)', 'Tropical Depression Carina','Typhoon Hagupit (Dindo)','Tropical Storm Sinlaki','Tropical Storm Jangmi (Enteng)','Tropical Depression 06W','Severe Tropical Storm Mekkhala (Ferdie)','Severe Tropical Storm Higos (Helen)','Typhoon Bavi (Igme)','Typhoon Maysak (Julian)','Typhoon Haishen (Kristine)','Tropical Depression 12W','Tropical Storm Noul (Leon)','Severe Tropical Storm Dolphin (Marce)','Severe Tropical Storm Kujira','Typhoon Chan-hom','Tropical Storm Linfa','Tropical Storm Nangka (Nika)','Tropical Depression Ofel','Typhoon Saudel (Pepito)','Tropical Depression 20W','Typhoon Molave (Quinta)','Typhoon Goni (Rolly)','Severe Tropical Storm Atsani (Siony)','Tropical Storm Etau (Tonyo)','Typhoon Vamco (Ulysses)','Tropical Storm Krovanh (Vicky)']}),
                 'Timor Leste':pd.DataFrame({'Date':['2020-3-13'],'Event':['Dili Flooding']
@@ -184,12 +185,15 @@ viz = st.multiselect('Select the type of disruption to human mobility you would 
 if country!='Timor Leste':
     # viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
     analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
-    options=('Provincial level','City/municipality level','Custom'))
+    options=('National level','Provincial level','City/municipality level','Custom'))
     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
     analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Albay','Catanduanes','Metropolitan Manila']}
+
     if analysis!='Custom':
         column = analysis_level[analysis]
-        if analysis=='Provincial level':
+        if analysis=='National level':
+            area = [c_dict[country]]
+        elif analysis=='Provincial level':
             flood_provinces = st.sidebar.radio('Filter options below to only include provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
             if flood_provinces=='Yes':
                 area = pac[pac['Country']==country]['Province'].sort_values().unique().reshape(1,-1)[0]
@@ -207,7 +211,8 @@ if country!='Timor Leste':
         data = df[df[column].isin(area)]
         pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
         data = data.groupby([column,'ds']).mean().reset_index()
-        data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+        cols = [i for i in data.columns if 'country' not in i]
+        data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds')
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
 
@@ -265,7 +270,6 @@ else:
     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
     plot_slot=st.empty()
     # st.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
-
 plot_slot.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
 # ----------DOWNLOADING DATA----------------------
 
