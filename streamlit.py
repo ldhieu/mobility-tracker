@@ -31,8 +31,11 @@ def download_from_hdx(show_spinner=False):
     '''
     Function to download latest movement range maps from HDX.
     '''
-    url = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1]['download_url']
-    return url
+    names = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1:3]#['download_url']
+    urls = [i['download_url'] for i in names]
+    return urls
+
+print(download_from_hdx())
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def government_response_reader():
@@ -56,10 +59,15 @@ def government_response_reader():
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def facebook_data_reader():
-    resp = urlopen(download_from_hdx())
-    zipfile = ZipFile(BytesIO(resp.read()))
-    file = [i for i in zipfile.namelist() if 'movement' in i][0]
-    df = pd.read_csv(zipfile.open(file),sep='\t')
+    y20 = urlopen(download_from_hdx()[0])
+    y21 = urlopen(download_from_hdx()[1])
+    zipfile20 = ZipFile(BytesIO(y20.read()))
+    zipfile21 = ZipFile(BytesIO(y21.read()))
+    file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
+    file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
+    df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
+    df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
+    df = pd.concat([df20,df21],ignore_index=True)
     df = df[df['country'].isin(['VNM','TLS','PHL'])]
     df['ds'] = pd.to_datetime(df['ds'])
     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
@@ -73,7 +81,7 @@ pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
 # col1, col2 = st.beta_columns(2)
-st.markdown("<h1 style='text-align: center;'>Can big data be used to monitor human mobility disruptions in near-real time?</h1>", unsafe_allow_html=True)
+st.header("Can big data be used to monitor human mobility disruptions in near-real time?")
 '''
 ### 
 2020 highlighted that climate-related and public health crises can result in widespread disruptions to human movement. With emerging sources of big data comes the promise of informing response, recovery, and ultimate resilience to these risks in near-real-time. Using location data derived from Facebook's [_Movement Range Maps_](https://dataforgood.fb.com/tools/movement-range-maps/), we provide a comparative cross-border visualization of human movement in the face of such challenges in selected Pacific countries.
