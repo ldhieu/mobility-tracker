@@ -57,8 +57,12 @@ def government_response_reader():
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def facebook_data_reader():
-    y20 = urlopen(download_from_hdx()[0])
-    y21 = urlopen(download_from_hdx()[1])
+    url20 = download_from_hdx()[0]
+    url21 = download_from_hdx()[1]
+    print(url20)
+    print(url21)
+    y20 = urlopen(url20)
+    y21 = urlopen(url21)
     zipfile20 = ZipFile(BytesIO(y20.read()))
     zipfile21 = ZipFile(BytesIO(y21.read()))
     file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
