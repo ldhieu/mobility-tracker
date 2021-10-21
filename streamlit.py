@@ -93,7 +93,7 @@ st.header("Can big data be used to monitor human mobility disruptions in near-re
 st.markdown('')
 st.subheader("Let's begin.")
 '\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** **Scroll** to zoom in and out of the plot.'
-html = " <a href='http://bdo-test.vnnb.net'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-observatory.png' height=150> </a>"
+html = " <a href='http://bdo-test.vnnb.net'> <img src='https://raw.githubusercontent.com/ldhieu/mobility-tracker/main/logo-observatory.png' height=150> </a>"
 
 st.sidebar.markdown(html, unsafe_allow_html=True)
 
