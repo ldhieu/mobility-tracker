@@ -55,31 +55,31 @@ def government_response_reader():
     c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
     return c
 
-@st.cache(suppress_st_warning=True,show_spinner=False)
-def facebook_data_reader():
-    url20 = download_from_hdx()[0]
-    url21 = download_from_hdx()[1]
-    print(url20)
-    print(url21)
-    y20 = urlopen(url20)
-    y21 = urlopen(url21)
-    zipfile20 = ZipFile(BytesIO(y20.read()))
-    zipfile21 = ZipFile(BytesIO(y21.read()))
-    file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
-    file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
-    df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
-    df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
-    df = pd.concat([df20,df21],ignore_index=True)
-    df = df[df['country'].isin(['VNM','TLS','PHL'])]
-    df['ds'] = pd.to_datetime(df['ds'])
-    df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
-    df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
-    return df
+# @st.cache(suppress_st_warning=True,show_spinner=False)
+# def facebook_data_reader():
+#     url20 = download_from_hdx()[0]
+#     url21 = download_from_hdx()[1]
+#     print(url20)
+#     print(url21)
+#     y20 = urlopen(url20)
+#     y21 = urlopen(url21)
+#     zipfile20 = ZipFile(BytesIO(y20.read()))
+#     zipfile21 = ZipFile(BytesIO(y21.read()))
+#     file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
+#     file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
+#     df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
+#     df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
+#     df = pd.concat([df20,df21],ignore_index=True)
+#     df = df[df['country'].isin(['VNM','TLS','PHL'])]
+#     df['ds'] = pd.to_datetime(df['ds'])
+#     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
+#     df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
+#     return df
 
-fb = facebook_data_reader()
-pac = read_pacific_typhoons().reset_index()
-pac['_y'] = 0
-pac['y'] = 100
+# fb = facebook_data_reader()
+# pac = read_pacific_typhoons().reset_index()
+# pac['_y'] = 0
+# pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
 col1, col2 = st.beta_columns(2)
@@ -90,15 +90,15 @@ st.header("Can big data be used to monitor human mobility disruptions in near-re
 '''
 st.markdown('')
 st.subheader("Let's begin.")
-# '\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** **Scroll** to zoom in and out of the plot.'
-# html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
+'\n\nYou can change what is visualized in the plot below by using the form in the **sidebar on the left.** **Scroll** to zoom in and out of the plot.'
+html = " <a href='covid-19observatory.com'> <img src='https://raw.githubusercontent.com/mahamfkhan/mobility-tracker/main/logo-covid.png' height=150> </a>"
 
-# st.sidebar.markdown(html, unsafe_allow_html=True)
+st.sidebar.markdown(html, unsafe_allow_html=True)
 
-# country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
-#     ('Vietnam','the Philippines','Timor Leste'),help='At the moment, only a few Pacific countries are visualized on this site. Please [write to us](mailto:mkhan57@worldbank.org) if you would like us to add other countries supported by Facebook onto the site.')
-# metric = st.sidebar.radio('What metric are you interested in monitoring?',
-#     options=('Mobility change','Staying put/sheltering in place'),help='The **Change in Movement** metric looks at how much people are moving around and compares it to a baseline period that predates most social distancing measures. The **Stay Put** metric looks at the fraction of the population that appears to stay within a small area surrounding their home for an entire day.')
+country = st.sidebar.radio('Start by selecting a country from the following Pacific countries.',
+    ('Vietnam','the Philippines','Timor Leste'),help='At the moment, only a few Pacific countries are visualized on this site. Please [write to us](mailto:mkhan57@worldbank.org) if you would like us to add other countries supported by Facebook onto the site.')
+metric = st.sidebar.radio('What metric are you interested in monitoring?',
+    options=('Mobility change','Staying put/sheltering in place'),help='The **Change in Movement** metric looks at how much people are moving around and compares it to a baseline period that predates most social distancing measures. The **Stay Put** metric looks at the fraction of the population that appears to stay within a small area surrounding their home for an entire day.')
 
 
 # if country=='Vietnam':
