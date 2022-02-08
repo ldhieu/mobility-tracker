@@ -76,10 +76,10 @@ def facebook_data_reader():
     df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
     return df
 
-# fb = facebook_data_reader()
-# pac = read_pacific_typhoons().reset_index()
-# pac['_y'] = 0
-# pac['y'] = 100
+fb = facebook_data_reader()
+pac = read_pacific_typhoons().reset_index()
+pac['_y'] = 0
+pac['y'] = 100
 
 # # ----------INTRODUCTION-----------------------------
 # # col1, col2 = st.beta_columns(2)
