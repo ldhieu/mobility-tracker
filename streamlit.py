@@ -12,7 +12,7 @@ import geopandas as gpd
 from io import BytesIO
 from urllib.request import urlopen
 from hdx.utilities.easy_logging import setup_logging
-from hdx.hdx_configuration import Configuration
+from hdx.api.configuration import Configuration
 try:
     Configuration.create(hdx_site='prod', hdx_read_only=True,user_agent='WBG')
 except:
