@@ -1,6 +1,9 @@
+altair==4.2.0
+geopandas==0.10.2
+numpy==1.22.2
+pandas==1.3.5
+requests==2.26.0
+vega_datasets==0.9.0
 hdx-python-api==5.5.3
 hdx-python-country==3.0.8
 hdx-python-utilities==3.0.8
-vega_datasets==0.9.0
-geopandas==0.10.2
-# geopandas-base==0.10.2
