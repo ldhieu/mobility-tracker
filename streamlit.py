@@ -2,14 +2,14 @@
 # import numpy as np
 import pandas as pd
 # from zipfile import ZipFile
-import requests
+# import requests
 # import altair as alt
 # import base64
 # import io
 # import datetime
 # from vega_datasets import data
 # import geopandas as gpd
-from io import BytesIO
+# from io import BytesIO
 # from urllib.request import urlopen
 # from hdx.utilities.easy_logging import setup_logging
 # from hdx.api.configuration import Configuration
