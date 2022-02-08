@@ -21,65 +21,65 @@ except:
 # or: requests.get(url).content
 
 # ----------READING FACEBOOK DATA--------------------
-def read_pacific_typhoons():
-    r = requests.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vRFJfCoAhf_no2vxzaTLMgqAqcx9XpNmX5HQOY2sX5BsNdopYsSZUoAV7lc5mCfnWTpmc5IN_4QNXBW/pub?output=csv')
-    pac = r.content
-    pac = pd.read_csv(BytesIO(pac), index_col=0,parse_dates=['start_date','end_date'])
-    return pac
+# def read_pacific_typhoons():
+#     r = requests.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vRFJfCoAhf_no2vxzaTLMgqAqcx9XpNmX5HQOY2sX5BsNdopYsSZUoAV7lc5mCfnWTpmc5IN_4QNXBW/pub?output=csv')
+#     pac = r.content
+#     pac = pd.read_csv(BytesIO(pac), index_col=0,parse_dates=['start_date','end_date'])
+#     return pac
 
-def download_from_hdx(show_spinner=False):
-    '''
-    Function to download latest movement range maps from HDX.
-    '''
-    names = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1:3]#['download_url']
-    urls = [i['download_url'] for i in names]
-    return urls
+# def download_from_hdx(show_spinner=False):
+#     '''
+#     Function to download latest movement range maps from HDX.
+#     '''
+#     names = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1:3]#['download_url']
+#     urls = [i['download_url'] for i in names]
+#     return urls
 
-@st.cache(suppress_st_warning=True,show_spinner=False)
-def government_response_reader():
-    url = ('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest_withnotes.csv')
-    s=requests.get(url).content
-    c=pd.read_csv(io.StringIO(s.decode('utf-8')))
-    c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex','C1_Notes','C2_Notes','C3_Notes','C4_Notes','C5_Notes','C6_Notes','C7_Notes','C8_Notes']]
-    c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls']
-    char = 300
-    c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
-    c['Stringency Metric'] = 'Oxford Stringency Index'
-    c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['Workplace closures'] = c['Workplace closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['Cancellations of public events'] = c['Cancellations of public events'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['Restrictions on gatherings'] = c['Restrictions on gatherings'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['Public transport closures'] = c['Public transport closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['Stay-at-home requirements'] = c['Stay-at-home requirements'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['Internal movement restrictions'] = c['Internal movement restrictions'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-    return c
+# @st.cache(suppress_st_warning=True,show_spinner=False)
+# def government_response_reader():
+#     url = ('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest_withnotes.csv')
+#     s=requests.get(url).content
+#     c=pd.read_csv(io.StringIO(s.decode('utf-8')))
+#     c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex','C1_Notes','C2_Notes','C3_Notes','C4_Notes','C5_Notes','C6_Notes','C7_Notes','C8_Notes']]
+#     c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls']
+#     char = 300
+#     c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
+#     c['Stringency Metric'] = 'Oxford Stringency Index'
+#     c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['Workplace closures'] = c['Workplace closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['Cancellations of public events'] = c['Cancellations of public events'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['Restrictions on gatherings'] = c['Restrictions on gatherings'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['Public transport closures'] = c['Public transport closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['Stay-at-home requirements'] = c['Stay-at-home requirements'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['Internal movement restrictions'] = c['Internal movement restrictions'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+#     return c
 
-@st.cache(suppress_st_warning=True,show_spinner=False)
-def facebook_data_reader():
-    url20 = download_from_hdx()[0]
-    url21 = download_from_hdx()[1]
-    print(url20)
-    print(url21)
-    y20 = urlopen(url20)
-    y21 = urlopen(url21)
-    zipfile20 = ZipFile(BytesIO(y20.read()))
-    zipfile21 = ZipFile(BytesIO(y21.read()))
-    file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
-    file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
-    df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
-    df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
-    df = pd.concat([df20,df21],ignore_index=True)
-    df = df[df['country'].isin(['VNM','TLS','PHL'])]
-    df['ds'] = pd.to_datetime(df['ds'])
-    df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
-    df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
-    return df
+# @st.cache(suppress_st_warning=True,show_spinner=False)
+# def facebook_data_reader():
+#     url20 = download_from_hdx()[0]
+#     url21 = download_from_hdx()[1]
+#     print(url20)
+#     print(url21)
+#     y20 = urlopen(url20)
+#     y21 = urlopen(url21)
+#     zipfile20 = ZipFile(BytesIO(y20.read()))
+#     zipfile21 = ZipFile(BytesIO(y21.read()))
+#     file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
+#     file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
+#     df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
+#     df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
+#     df = pd.concat([df20,df21],ignore_index=True)
+#     df = df[df['country'].isin(['VNM','TLS','PHL'])]
+#     df['ds'] = pd.to_datetime(df['ds'])
+#     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
+#     df['Staying Put'] = (df['all_day_ratio_single_tile_users']*100).round(2)
+#     return df
 
-fb = facebook_data_reader()
-pac = read_pacific_typhoons().reset_index()
-pac['_y'] = 0
-pac['y'] = 100
+# fb = facebook_data_reader()
+# pac = read_pacific_typhoons().reset_index()
+# pac['_y'] = 0
+# pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
 col1, col2 = st.beta_columns(2)
