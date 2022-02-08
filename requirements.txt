@@ -1,0 +1,3 @@
+hdx-python-api==5.5.3
+hdx-python-country==3.0.8
+hdx-python-utilities==3.0.8
