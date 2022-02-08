@@ -143,12 +143,12 @@ def facebook_data_filter(df,country):
     return df
 df = facebook_data_filter(fb,country)
 
-def time_widget():
-    time_range = st.slider(
-     "Select the date range you would like to visualize.",
-     data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime(),(data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime()),
-     format="MM/DD/YY")
-    return time_range
+# def time_widget():
+#     time_range = st.slider(
+#      "Select the date range you would like to visualize.",
+#      data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime(),(data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime()),
+#      format="MM/DD/YY")
+#     return time_range
 
 # ----------DEFINING A FUNCTION FOR PLOTTING TOOLTIP-----------------------------  
 def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
@@ -213,12 +213,16 @@ if country!='Timor Leste':
                 f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
                 options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
         data = df[df[column].isin(area)]
+     
         pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
         data = data.groupby([column,'ds']).mean().reset_index()
         cols = [i for i in data.columns if 'country' not in i]
-        data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds')
+        data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds',how='outer')
+        data['country'] = c_dict[country]
+        print(data['country'])           
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
+
 
     else:
 ## -----------COMPARISON GROUP 1--------------------
@@ -257,6 +261,8 @@ if country!='Timor Leste':
         df2['status'] = 'Group 2'
         data = pd.concat([df1,df2])
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+        data['country'] = c_dict[country]
+        print(data['country'])        
         base = alt.Chart(data).encode(x='ds') 
         line = base.mark_line(color='red').encode(y='PolicyValue:Q')
         color = alt.Color('status',legend=alt.Legend(title='Comparison groups',orient='bottom'),scale=alt.Scale(scheme='magma'))
@@ -270,6 +276,8 @@ else:
         default=['Dili Barat','Dili Timur'])
     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+    data['country'] = c_dict[country]
+    print(data['country'])
     pac = pac[pac['Province'].isin(analysis)]
     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
     plot_slot=st.empty()
