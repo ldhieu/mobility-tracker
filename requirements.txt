@@ -1,5 +1,4 @@
 hdx-python-api==5.5.3
 hdx-python-country==3.0.8
 hdx-python-utilities==3.0.8
-vega-datasets @ file:///home/conda/feedstock_root/build_artifacts/vega_datasets_1606414058616/work
-
+vega_datasets==0.9.0
