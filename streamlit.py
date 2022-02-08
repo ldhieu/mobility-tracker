@@ -20,7 +20,7 @@ except:
     pass
 # or: requests.get(url).content
 
-----------READING FACEBOOK DATA--------------------
+# ----------READING FACEBOOK DATA--------------------
 def read_pacific_typhoons():
     r = requests.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vRFJfCoAhf_no2vxzaTLMgqAqcx9XpNmX5HQOY2sX5BsNdopYsSZUoAV7lc5mCfnWTpmc5IN_4QNXBW/pub?output=csv')
     pac = r.content
