@@ -20,20 +20,20 @@ except:
     pass
 # or: requests.get(url).content
 
-# ----------READING FACEBOOK DATA--------------------
-# def read_pacific_typhoons():
-#     r = requests.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vRFJfCoAhf_no2vxzaTLMgqAqcx9XpNmX5HQOY2sX5BsNdopYsSZUoAV7lc5mCfnWTpmc5IN_4QNXBW/pub?output=csv')
-#     pac = r.content
-#     pac = pd.read_csv(BytesIO(pac), index_col=0,parse_dates=['start_date','end_date'])
-#     return pac
+----------READING FACEBOOK DATA--------------------
+def read_pacific_typhoons():
+    r = requests.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vRFJfCoAhf_no2vxzaTLMgqAqcx9XpNmX5HQOY2sX5BsNdopYsSZUoAV7lc5mCfnWTpmc5IN_4QNXBW/pub?output=csv')
+    pac = r.content
+    pac = pd.read_csv(BytesIO(pac), index_col=0,parse_dates=['start_date','end_date'])
+    return pac
 
-# def download_from_hdx(show_spinner=False):
-#     '''
-#     Function to download latest movement range maps from HDX.
-#     '''
-#     names = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1:3]#['download_url']
-#     urls = [i['download_url'] for i in names]
-#     return urls
+def download_from_hdx(show_spinner=False):
+    '''
+    Function to download latest movement range maps from HDX.
+    '''
+    names = Dataset.get_resources(Dataset.read_from_hdx('movement-range-maps'))[1:3]#['download_url']
+    urls = [i['download_url'] for i in names]
+    return urls
 
 # @st.cache(suppress_st_warning=True,show_spinner=False)
 # def government_response_reader():
