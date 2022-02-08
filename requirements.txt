@@ -1,9 +1,0 @@
-pandas==0.25.2
-geopandas==0.6.1
-requests==2.21.0
-numpy==1.18.1
-altair==4.1.0
-vega_datasets==0.7.0
-hdx-python-api==4.7.4
-hdx-python-country==2.6.4
-hdx-python-utilities==2.5.1
