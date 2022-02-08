@@ -35,25 +35,25 @@ def download_from_hdx(show_spinner=False):
     urls = [i['download_url'] for i in names]
     return urls
 
-# @st.cache(suppress_st_warning=True,show_spinner=False)
-# def government_response_reader():
-#     url = ('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest_withnotes.csv')
-#     s=requests.get(url).content
-#     c=pd.read_csv(io.StringIO(s.decode('utf-8')))
-#     c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex','C1_Notes','C2_Notes','C3_Notes','C4_Notes','C5_Notes','C6_Notes','C7_Notes','C8_Notes']]
-#     c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls']
-#     char = 300
-#     c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
-#     c['Stringency Metric'] = 'Oxford Stringency Index'
-#     c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['Workplace closures'] = c['Workplace closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['Cancellations of public events'] = c['Cancellations of public events'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['Restrictions on gatherings'] = c['Restrictions on gatherings'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['Public transport closures'] = c['Public transport closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['Stay-at-home requirements'] = c['Stay-at-home requirements'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['Internal movement restrictions'] = c['Internal movement restrictions'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
-#     return c
+@st.cache(suppress_st_warning=True,show_spinner=False)
+def government_response_reader():
+    url = ('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest_withnotes.csv')
+    s=requests.get(url).content
+    c=pd.read_csv(io.StringIO(s.decode('utf-8')))
+    c = c[['CountryName', 'CountryCode',  'Date',  'StringencyIndex','C1_Notes','C2_Notes','C3_Notes','C4_Notes','C5_Notes','C6_Notes','C7_Notes','C8_Notes']]
+    c.columns = ['CountryName', 'country', 'ds', 'Policy Stringency','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls']
+    char = 300
+    c['ds'] = pd.to_datetime(c['ds'],format = '%Y%m%d')
+    c['Stringency Metric'] = 'Oxford Stringency Index'
+    c['School closures'] = c['School closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Workplace closures'] = c['Workplace closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Cancellations of public events'] = c['Cancellations of public events'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Restrictions on gatherings'] = c['Restrictions on gatherings'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Public transport closures'] = c['Public transport closures'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Stay-at-home requirements'] = c['Stay-at-home requirements'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['Internal movement restrictions'] = c['Internal movement restrictions'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    c['International travel controls'] = c['International travel controls'].fillna('No new restrictions').apply(lambda x: x[:char].split('. ')[0])
+    return c
 
 # @st.cache(suppress_st_warning=True,show_spinner=False)
 # def facebook_data_reader():
