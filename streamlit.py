@@ -302,7 +302,7 @@ str = """
 - A spreadsheet containing all the weather events used in this app can be found [here](https://docs.google.com/spreadsheets/d/1RTvPgw29yTXi9GAAc8kSQAJ-3sQU7MqOMwZgbAEoG4E/edit#gid=0). Please [write to us](mailto:mkhan57@worldbank.org) with suggestions for addiitons to this spreadsheet.
 
 ### Other resources
-- [Blog](https://towardsdatascience.com/small-districts-big-data-who-does-geo-referenced-mobility-data-represent-78212ca004f6). Who Does Smartphone Location Data Represent?
+- [[Blog]](https://towardsdatascience.com/small-districts-big-data-who-does-geo-referenced-mobility-data-represent-78212ca004f6) Who Does Smartphone Location Data Represent?
 """
 st.markdown(str)
 
