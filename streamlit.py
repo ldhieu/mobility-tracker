@@ -303,6 +303,8 @@ str = """
 
 ### Other resources
 - [[Blog]](https://towardsdatascience.com/small-districts-big-data-who-does-geo-referenced-mobility-data-represent-78212ca004f6) Who Does Smartphone Location Data Represent?
+- [[Blog]](https://towardsdatascience.com/the-digital-tailwinds-of-pandemics-and-typhoons-cross-border-insights-from-facebook-mobility-data-763c493b5ecc) Can Human Mobility Disruptions in Cities Be Seen in Near-Real-Time?
+- [[Blog]](https://mahamfkhan.medium.com/how-do-people-move-during-a-disaster-fad910e5de45) Quantifying disruptions to human activity in near-real-time: A tutorial
 """
 st.markdown(str)
 
