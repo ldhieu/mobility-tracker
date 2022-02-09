@@ -284,13 +284,13 @@ else:
     plot_slot=st.empty()
     # st.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
 plot_slot.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
-# # ----------DOWNLOADING DATA----------------------
+# ----------DOWNLOADING DATA----------------------
 
-# def get_table_download_link_csv(df):
-#     csv = df.to_csv(index=False).encode()
-#     b64 = base64.b64encode(csv).decode()
-#     href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">here.</a>'
-#     return href
+def get_table_download_link_csv(df):
+    csv = df.to_csv(index=False).encode()
+    b64 = base64.b64encode(csv).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="facebook_export.csv" target="_blank">here.</a>'
+    return href
 
 st.subheader('Export data')
 # st.markdown(f'Download the data visualized in the plot above by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
