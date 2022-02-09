@@ -293,7 +293,7 @@ def get_table_download_link_csv(df):
     return href
 
 st.subheader('Export data')
-# st.markdown(f'Download the data visualized in the plot above by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
+st.markdown(f'Download the data visualized in the plot above by clicking {get_table_download_link_csv(data)}', unsafe_allow_html=True)
 
 str = """
 ### Data Sources
