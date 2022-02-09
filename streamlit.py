@@ -181,109 +181,109 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
         chart = alt.layer(chart,pr).resolve_scale(color='independent',y='independent').configure_axis(grid=False)#.configure_view(strokeOpacity=0)
     return chart
 
-# g = government_response_reader()
-# # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
-# st.header(f'Analysis of mobility changes in {country}.')
-# viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
+g = government_response_reader()
+# ----------SELECTION OF LEVEL OF ANALYSIS----------------------
+st.header(f'Analysis of mobility changes in {country}.')
+viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
 
-# # ----------ALL BUT TIMOR LESTE----------------------
-# if country!='Timor Leste':
-#     # viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
-#     analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
-#     options=('National level','Provincial level','City/municipality level','Custom'))
-#     analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
-#     analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Albay','Catanduanes','Metropolitan Manila']}
+# ----------ALL BUT TIMOR LESTE----------------------
+if country!='Timor Leste':
+    # viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
+    analysis = st.sidebar.radio('At what level would you like to conduct your analysis?',
+    options=('National level','Provincial level','City/municipality level','Custom'))
+    analysis_level_default = {'Provincial level':default_provinces,'City/municipality level':default_cities,'Custom':None}
+    analysis_flooding_default = {'Vietnam':['Thua Thien Hue','Quang Binh','Quang Ngai'],'the Philippines':['Albay','Catanduanes','Metropolitan Manila']}
 
-#     if analysis!='Custom':
-#         column = analysis_level[analysis]
-#         if analysis=='National level':
-#             area = [c_dict[country]]
-#         elif analysis=='Provincial level':
-#             flood_provinces = st.sidebar.radio('Filter options below to only include provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
-#             if flood_provinces=='Yes':
-#                 area = pac[pac['Country']==country]['Province'].sort_values().unique().reshape(1,-1)[0]
-#                 area = st.sidebar.multiselect(
-#                 f'This dropdown only contains {analysis_label[analysis].lower()} that were affected by Pacific typhoons. Select as many of these as you would like to visualize and/or compare.',
-#             options=tuple(area),default=analysis_flooding_default[country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
-#             else:
-#                 area = st.sidebar.multiselect(
-#                 f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
-#                 options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
-#         else:
-#                 area = st.sidebar.multiselect(
-#                 f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
-#                 options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
-#         data = df[df[column].isin(area)]
+    if analysis!='Custom':
+        column = analysis_level[analysis]
+        if analysis=='National level':
+            area = [c_dict[country]]
+        elif analysis=='Provincial level':
+            flood_provinces = st.sidebar.radio('Filter options below to only include provinces that were affected by 2020 Pacific floods?',options = ('Yes','No'),index=1)
+            if flood_provinces=='Yes':
+                area = pac[pac['Country']==country]['Province'].sort_values().unique().reshape(1,-1)[0]
+                area = st.sidebar.multiselect(
+                f'This dropdown only contains {analysis_label[analysis].lower()} that were affected by Pacific typhoons. Select as many of these as you would like to visualize and/or compare.',
+            options=tuple(area),default=analysis_flooding_default[country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
+            else:
+                area = st.sidebar.multiselect(
+                f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
+                options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
+        else:
+                area = st.sidebar.multiselect(
+                f'Select as many {analysis_label[analysis].lower()} as you would like to visualize and/or compare.',
+                options=tuple((df[column].sort_values().unique()).reshape(1, -1)[0]),default=analysis_level_default[analysis][country],help='Names of administrative units are taken from the [Database of Global Administrative Areas (GADM)](https://gadm.org/download_country_v3.html). Note that some cities, e.g. Hanoi, Metropolitan Manila, and Dili, show up in the provinces list because they are centrally-administered units.')
+        data = df[df[column].isin(area)]
      
-#         pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
-#         data = data.groupby([column,'ds']).mean().reset_index()
-#         cols = [i for i in data.columns if 'country' not in i]
-#         data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds',how='outer')
-#         data['country'] = c_dict[country]
-#         print(data['country'])           
-#         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
-#         plot_slot = st.empty()
+        pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
+        data = data.groupby([column,'ds']).mean().reset_index()
+        cols = [i for i in data.columns if 'country' not in i]
+        data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds',how='outer')
+        data['country'] = c_dict[country]
+        print(data['country'])           
+        color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
+        plot_slot = st.empty()
 
 
-#     else:
-# ## -----------COMPARISON GROUP 1--------------------
-#         default_prov1 = {'Vietnam':['Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
-#         default_cities1 = {'Vietnam':['Ha Giang'],'the Philippines':['Quezon City'],'Timor Leste':'Dili Barat'} 
-#         st.sidebar.subheader(f'Comparison Group 1.')
-#         prov1 = st.sidebar.multiselect(
-#         f'Select provinces/centrally-controlled municipalities to include in comparison group 1.',
-#         options=tuple((df[analysis_level['Provincial level']].sort_values().unique()).reshape(1, -1)[0]),default = default_prov1[country])
-#         cities_in = st.sidebar.multiselect(
-#         f'Select cities/muncipalities to include in comparison group 1.',
-#         options=tuple((df[analysis_level['City/municipality level']].sort_values().unique()).reshape(1, -1)[0]),default = default_cities1[country])
-#         df1 = df[(df[analysis_level['Provincial level']].isin(prov1)) | (df[analysis_level['City/municipality level']].isin(cities_in))]
+    else:
+## -----------COMPARISON GROUP 1--------------------
+        default_prov1 = {'Vietnam':['Da Nang'],'the Philippines':'Metropolitan Manila','Timor Leste':'Dili Barat'} 
+        default_cities1 = {'Vietnam':['Ha Giang'],'the Philippines':['Quezon City'],'Timor Leste':'Dili Barat'} 
+        st.sidebar.subheader(f'Comparison Group 1.')
+        prov1 = st.sidebar.multiselect(
+        f'Select provinces/centrally-controlled municipalities to include in comparison group 1.',
+        options=tuple((df[analysis_level['Provincial level']].sort_values().unique()).reshape(1, -1)[0]),default = default_prov1[country])
+        cities_in = st.sidebar.multiselect(
+        f'Select cities/muncipalities to include in comparison group 1.',
+        options=tuple((df[analysis_level['City/municipality level']].sort_values().unique()).reshape(1, -1)[0]),default = default_cities1[country])
+        df1 = df[(df[analysis_level['Provincial level']].isin(prov1)) | (df[analysis_level['City/municipality level']].isin(cities_in))]
 
-# ## -----------COMPARISON GROUP 2--------------------
-#         default_prov2 = {'Vietnam':['Ha Noi','Ho Chi Minh'],'the Philippines':['Albay','Catanduanes'],'Timor Leste':'Dili Barat'} 
-#         default_cities2 = {'Vietnam':['Quang Binh'],'the Philippines':['Tuguegarao City'],'Timor Leste':'Dili Barat'} 
-#         st.sidebar.subheader(f'Comparison Group 2.')
-#         prov2_default = ['Ha Noi','Ho Chi Minh']
-#         prov2 = st.sidebar.multiselect(
-#         f'Select provinces/centrally-controlled municipalities to include in comparison group 2.',
-#             options=tuple((df[analysis_level['Provincial level']].sort_values().unique()).reshape(1, -1)[0]),default = default_prov2[country])
-#         cities_ex = st.sidebar.multiselect(
-#         f'Select cities/muncipalities to include in comparison group 2.',
-#         options=tuple((df[analysis_level['City/municipality level']].sort_values().unique()).reshape(1, -1)[0]),default = default_cities2[country])
-#         df2 = df[~((df[analysis_level['Provincial level']].isin(prov2)) | (df[analysis_level['City/municipality level']].isin(cities_ex)))]
-#         in_1 = (pac['Province'].isin(prov1))
-#         in_2 = (pac['Province'].isin(prov2))
-#         pac = pac[in_1 | in_2]   
-#         df1 = df1.set_index('ds')\
-#             .resample('1D').mean().reset_index()#.set_index('ds').resample('7D').mean().reset_index()
-#         df1['status'] = 'Group 1'        
+## -----------COMPARISON GROUP 2--------------------
+        default_prov2 = {'Vietnam':['Ha Noi','Ho Chi Minh'],'the Philippines':['Albay','Catanduanes'],'Timor Leste':'Dili Barat'} 
+        default_cities2 = {'Vietnam':['Quang Binh'],'the Philippines':['Tuguegarao City'],'Timor Leste':'Dili Barat'} 
+        st.sidebar.subheader(f'Comparison Group 2.')
+        prov2_default = ['Ha Noi','Ho Chi Minh']
+        prov2 = st.sidebar.multiselect(
+        f'Select provinces/centrally-controlled municipalities to include in comparison group 2.',
+            options=tuple((df[analysis_level['Provincial level']].sort_values().unique()).reshape(1, -1)[0]),default = default_prov2[country])
+        cities_ex = st.sidebar.multiselect(
+        f'Select cities/muncipalities to include in comparison group 2.',
+        options=tuple((df[analysis_level['City/municipality level']].sort_values().unique()).reshape(1, -1)[0]),default = default_cities2[country])
+        df2 = df[~((df[analysis_level['Provincial level']].isin(prov2)) | (df[analysis_level['City/municipality level']].isin(cities_ex)))]
+        in_1 = (pac['Province'].isin(prov1))
+        in_2 = (pac['Province'].isin(prov2))
+        pac = pac[in_1 | in_2]   
+        df1 = df1.set_index('ds')\
+            .resample('1D').mean().reset_index()#.set_index('ds').resample('7D').mean().reset_index()
+        df1['status'] = 'Group 1'        
 
-#         df2 = df2.set_index('ds')\
-#             .resample('1D').mean().reset_index()
-#         df2['status'] = 'Group 2'
-#         data = pd.concat([df1,df2])
-#         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-#         data['country'] = c_dict[country]
-#         print(data['country'])        
-#         base = alt.Chart(data).encode(x='ds') 
-#         line = base.mark_line(color='red').encode(y='PolicyValue:Q')
-#         color = alt.Color('status',legend=alt.Legend(title='Comparison groups',orient='bottom'),scale=alt.Scale(scheme='magma'))
-#         plot_slot = st.empty()
-# ## -----------TIMOR LESTE--------------------
-# else: 
-#     # viz = ['COVID-19 Restrictions']
-#     st.write(f'For {country}, data is only available for Dili Timur and Dili Barat.')
-#     analysis = st.sidebar.multiselect('Select your area of interest',
-#         options=['Dili Barat','Dili Timur'],
-#         default=['Dili Barat','Dili Timur'])
-#     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
-#     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-#     data['country'] = c_dict[country]
-#     print(data['country'])
-#     pac = pac[pac['Province'].isin(analysis)]
-#     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
-#     plot_slot=st.empty()
-#     # st.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
-# plot_slot.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
+        df2 = df2.set_index('ds')\
+            .resample('1D').mean().reset_index()
+        df2['status'] = 'Group 2'
+        data = pd.concat([df1,df2])
+        data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+        data['country'] = c_dict[country]
+        print(data['country'])        
+        base = alt.Chart(data).encode(x='ds') 
+        line = base.mark_line(color='red').encode(y='PolicyValue:Q')
+        color = alt.Color('status',legend=alt.Legend(title='Comparison groups',orient='bottom'),scale=alt.Scale(scheme='magma'))
+        plot_slot = st.empty()
+## -----------TIMOR LESTE--------------------
+else: 
+    # viz = ['COVID-19 Restrictions']
+    st.write(f'For {country}, data is only available for Dili Timur and Dili Barat.')
+    analysis = st.sidebar.multiselect('Select your area of interest',
+        options=['Dili Barat','Dili Timur'],
+        default=['Dili Barat','Dili Timur'])
+    data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
+    data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
+    data['country'] = c_dict[country]
+    print(data['country'])
+    pac = pac[pac['Province'].isin(analysis)]
+    color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
+    plot_slot=st.empty()
+    # st.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
+plot_slot.write(plotting(data,metric,color=color,country=country,viz=viz,pac=pac))
 # # ----------DOWNLOADING DATA----------------------
 
 # def get_table_download_link_csv(df):
