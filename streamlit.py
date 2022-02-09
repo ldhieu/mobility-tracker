@@ -69,8 +69,8 @@ def facebook_data_reader():
     file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
     df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
     df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
-    # df = pd.concat([df20,df21],ignore_index=True)
-    df = df20
+    df = pd.concat([df20,df21],ignore_index=True)
+    # df = df20
     df = df[df['country'].isin(['VNM','TLS','PHL'])]
     # df = df.set_index('ds').resample('1W').mean().reset_index()
     df['ds'] = pd.to_datetime(df['ds'])
@@ -217,11 +217,12 @@ if country!='Timor Leste':
         data = df[df[column].isin(area)]
      
         pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
-        data = data.groupby([column,'ds']).mean().reset_index()
+        # data = data.groupby([column,'ds']).mean().reset_index()
+        data = data.set_index('ds').groupby([column]).resample('3D').mean().reset_index()
         cols = [i for i in data.columns if 'country' not in i]
-        data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds',how='outer')
-        data['country'] = c_dict[country]
-        print(data['country'])           
+        data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds')
+        data['country'] = c_dict[country] 
+        print(data.head())         
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
 
@@ -263,8 +264,7 @@ if country!='Timor Leste':
         df2['status'] = 'Group 2'
         data = pd.concat([df1,df2])
         data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
-        data['country'] = c_dict[country]
-        print(data['country'])        
+        data['country'] = c_dict[country]       
         base = alt.Chart(data).encode(x='ds') 
         line = base.mark_line(color='red').encode(y='PolicyValue:Q')
         color = alt.Color('status',legend=alt.Legend(title='Comparison groups',orient='bottom'),scale=alt.Scale(scheme='magma'))
@@ -279,7 +279,6 @@ else:
     data = df[df['polygon_name'].isin(analysis)].groupby(['polygon_name','ds']).mean().reset_index()
     data = pd.merge(data,g[g['country']==c_dict[country]],on='ds')
     data['country'] = c_dict[country]
-    print(data['country'])
     pac = pac[pac['Province'].isin(analysis)]
     color = alt.Color('polygon_name',legend=alt.Legend(title='Area'))
     plot_slot=st.empty()
