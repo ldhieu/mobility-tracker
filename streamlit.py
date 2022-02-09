@@ -101,18 +101,18 @@ metric = st.sidebar.radio('What metric are you interested in monitoring?',
     options=('Mobility change','Staying put/sheltering in place'),help='The **Change in Movement** metric looks at how much people are moving around and compares it to a baseline period that predates most social distancing measures. The **Stay Put** metric looks at the fraction of the population that appears to stay within a small area surrounding their home for an entire day.')
 
 
-# if country=='Vietnam':
-#     nat_column = 'country'
-#     prov_column = 'VARNAME_1'
-#     city_column = 'VARNAME_2'
-# elif country == 'Timor Leste':
-#     nat_column = 'country_x'
-#     prov_column = 'polygon_name'
-#     city_column = 'polygon_name'
-# else:
-#     nat_column = 'country'
-#     prov_column = 'NAME_1'
-#     city_column = 'NAME_2'
+if country=='Vietnam':
+    nat_column = 'country'
+    prov_column = 'VARNAME_1'
+    city_column = 'VARNAME_2'
+elif country == 'Timor Leste':
+    nat_column = 'country_x'
+    prov_column = 'polygon_name'
+    city_column = 'polygon_name'
+else:
+    nat_column = 'country'
+    prov_column = 'NAME_1'
+    city_column = 'NAME_2'
 
 # # ----------COUNTRY & DEFAULT DICTIONARIES----------
 # c_dict = {'Vietnam':'VNM','the Philippines':'PHL','Timor Leste':'TLS'}
