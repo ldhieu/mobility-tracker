@@ -57,17 +57,17 @@ def government_response_reader():
 
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def facebook_data_reader():
-    # url20 = download_from_hdx()[0]
+    url20 = download_from_hdx()[0]
     url21 = download_from_hdx()[1]
-    # print(url20)
+    print(url20)
     print(url21)
-    # y20 = urlopen(url20)
+    y20 = urlopen(url20)
     y21 = urlopen(url21)
-    # zipfile20 = ZipFile(BytesIO(y20.read()))
+    zipfile20 = ZipFile(BytesIO(y20.read()))
     zipfile21 = ZipFile(BytesIO(y21.read()))
-    # file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
+    file20 = [i for i in zipfile20.namelist() if 'movement' in i][0]
     file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
-    # df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
+    df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
     df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
     # df = pd.concat([df20,df21],ignore_index=True)
     df = df21
