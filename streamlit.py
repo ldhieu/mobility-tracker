@@ -69,8 +69,8 @@ def facebook_data_reader():
     file21 = [i for i in zipfile21.namelist() if 'movement' in i][0]
     df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
     df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
-    # df = pd.concat([df20,df21],ignore_index=True)
-    df = df21
+    df = pd.concat([df20,df21],ignore_index=True)
+    # df = df21
     df = df[df['country'].isin(['VNM','TLS','PHL'])]
     df['ds'] = pd.to_datetime(df['ds'])
     df['Change in Mobility'] = (df['all_day_bing_tiles_visited_relative_change']*100).round(2)
