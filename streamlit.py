@@ -184,7 +184,7 @@ def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=No
 
 g = government_response_reader()
 # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
-st.header(f'Analysis of mobility changes in {country}.')
+st.header(f'Analysis of mobility changes in {country} in 2020.')
 viz = st.multiselect('Select the type of disruption to human mobility you would like to visualize.',options=['COVID-19 Restrictions','Pacific Typhoons'],default=['COVID-19 Restrictions','Pacific Typhoons'])
 
 # ----------ALL BUT TIMOR LESTE----------------------
