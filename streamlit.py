@@ -129,27 +129,27 @@ typhoon_dict = {'Vietnam':pd.DataFrame({'Date': ['2020-10-05','2020-10-09', '202
                 'Timor Leste':pd.DataFrame({'Date':['2020-3-13'],'Event':['Dili Flooding']
                 })
                 }
-# # ----------FILTERING DATA-----------------------------
-# @st.cache(suppress_st_warning=True,show_spinner=False)
-# def facebook_data_filter(df,country):
-#     df = df[df['country']==c_dict[country]]
-#     if country!='Timor Leste':
-#         adm1 = gpd.read_file(f'boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_1.shp')
-#         adm2 = gpd.read_file(f'boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_2.shp')
-#         df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
-#         .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
-#     # else:
-#         # adm1 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm1_who_ocha_20200911.shp')
-#         # adm2 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm2_who_ocha_20200911.shp')
-#     return df
-# df = facebook_data_filter(fb,country)
+# ----------FILTERING DATA-----------------------------
+@st.cache(suppress_st_warning=True,show_spinner=False)
+def facebook_data_filter(df,country):
+    df = df[df['country']==c_dict[country]]
+    if country!='Timor Leste':
+        adm1 = gpd.read_file(f'boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_1.shp')
+        adm2 = gpd.read_file(f'boundaries/{c_dict[country]}/gadm36_{c_dict[country]}_2.shp')
+        df = pd.merge(df,adm2[['GID_1','GID_2','VARNAME_2','NAME_1','NAME_2']],left_on='polygon_id',right_on='GID_2')\
+        .merge(adm1[['GID_1','VARNAME_1']],on='GID_1')
+    # else:
+        # adm1 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm1_who_ocha_20200911.shp')
+        # adm2 = gpd.read_file(f'boundaries/TLS/tls_admbnda_adm2_who_ocha_20200911.shp')
+    return df
+df = facebook_data_filter(fb,country)
 
-# # def time_widget():
-# #     time_range = st.slider(
-# #      "Select the date range you would like to visualize.",
-# #      data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime(),(data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime()),
-# #      format="MM/DD/YY")
-# #     return time_range
+# def time_widget():
+#     time_range = st.slider(
+#      "Select the date range you would like to visualize.",
+#      data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime(),(data['ds'].min().to_pydatetime(),data['ds'].max().to_pydatetime()),
+#      format="MM/DD/YY")
+#     return time_range
 
 # # ----------DEFINING A FUNCTION FOR PLOTTING TOOLTIP-----------------------------  
 # def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
