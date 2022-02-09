@@ -222,7 +222,7 @@ if country!='Timor Leste':
         cols = [i for i in data.columns if 'country' not in i]
         data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds')
         data['country'] = c_dict[country]     
-        color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
+        color=alt.Color(column,legend=alt.Legend(title='Country',orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
 
 
