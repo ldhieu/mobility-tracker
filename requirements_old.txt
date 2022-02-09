@@ -1,6 +1,0 @@
-hdx-python-api==5.5.3
-hdx-python-country==3.0.8
-hdx-python-utilities==3.0.8
-vega_datasets==0.9.0
-geopandas==0.10.2
-# geopandas-base==0.10.2
