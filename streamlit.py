@@ -58,7 +58,7 @@ def government_response_reader():
 @st.cache(suppress_st_warning=True,show_spinner=False)
 def facebook_data_reader():
     url20 = download_from_hdx()[1]
-    url21 = download_from_hdx()[2]
+    url21 = download_from_hdx()[0]
     print(url20)
     print(url21)
     y20 = urlopen(url20)
