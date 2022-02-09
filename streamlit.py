@@ -82,7 +82,7 @@ def government_response_reader():
 # pac['y'] = 100
 
 # ----------INTRODUCTION-----------------------------
-col1, col2 = st.beta_columns(2)
+col1, col2 = st.columns(2)
 st.header("Can big data be used to monitor human mobility disruptions in near-real time?")
 '''
 ### 
