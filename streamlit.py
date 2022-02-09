@@ -70,7 +70,7 @@ def facebook_data_reader():
     df20 = pd.read_csv(zipfile20.open(file20),sep='\t')
     df21 = pd.read_csv(zipfile21.open(file21),sep='\t')
     # df = pd.concat([df20,df21],ignore_index=True)
-    df = df21
+    df = df20
     df = df[df['country'].isin(['VNM','TLS','PHL'])]
     # df = df.set_index('ds').resample('1W').mean().reset_index()
     df['ds'] = pd.to_datetime(df['ds'])
