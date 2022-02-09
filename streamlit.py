@@ -217,12 +217,11 @@ if country!='Timor Leste':
         data = df[df[column].isin(area)]
      
         pac = pac[pac['Province'].isin(data[analysis_level['Provincial level']].unique())]
-        # data = data.groupby([column,'ds']).mean().reset_index()
-        data = data.set_index('ds').groupby([column]).resample('3D').mean().reset_index()
+        data = data.groupby([column,'ds']).mean().reset_index()
+        # data = data.set_index('ds').groupby([column]).resample('3D').mean().reset_index()
         cols = [i for i in data.columns if 'country' not in i]
         data = pd.merge(data[cols],g[g['country']==c_dict[country]],on='ds')
-        data['country'] = c_dict[country] 
-        print(data.head())         
+        data['country'] = c_dict[country]     
         color=alt.Color(column,legend=alt.Legend(title=metric_ylabel_full[metric],orient='bottom'),scale=alt.Scale(scheme='magma'))
         plot_slot = st.empty()
 
