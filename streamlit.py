@@ -151,35 +151,35 @@ df = facebook_data_filter(fb,country)
 #      format="MM/DD/YY")
 #     return time_range
 
-# # ----------DEFINING A FUNCTION FOR PLOTTING TOOLTIP-----------------------------  
-# def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
-#     date_df = typhoon_dict[country]
-#     if metric == 'Staying put/sheltering in place':
-#         domain = [0,100]
-#     else:
-#         domain=[-100,100]
-#     date_df['y'] = 100
-#     base = alt.Chart(data).encode(x=alt.X('ds', axis=alt.Axis(title='Date'),
-#     ))\
-#         .properties(width=700,height=300)
-#     pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric]), scale=alt.Scale(domain=domain)),color=color,tooltip=[metric_dict[metric]])
-#     circle = base.mark_circle(opacity=.5,size=20).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2'),legend=alt.Legend(orient='bottom')))
-#     try:
-#         pac['Disaster Event'] = 'Pacific Typhoon'
-#         rules = alt.Chart(pac.reset_index()).mark_rect(opacity=0.3,).encode(tooltip=['Province','Event'],x='start_date',x2='end_date',y2='y',y='_y',color=alt.Color('Disaster Event',
-#         legend=alt.Legend(orient='bottom'),
-#         scale=alt.Scale(scheme='reds')))
-#     except:
-#         pass
-#     if set(viz) == set(['COVID-19 Restrictions']):
-#         chart = alt.layer(circle,pr).interactive(bind_y=False).resolve_scale(y = 'independent',color='independent').configure_axis(grid=False).configure_view(strokeOpacity=0)
-#     if set(viz)==set(['Pacific Typhoons']):
-#         chart = alt.layer(pr,rules).interactive(bind_y=False).resolve_scale(color='independent').configure_axis(
-#     grid=False)#.configure_view(strokeOpacity=0)
-#     if set(viz)==set(['COVID-19 Restrictions','Pacific Typhoons']):
-#         chart = alt.layer(circle,rules).interactive(bind_y=False).resolve_scale(color='independent')#.configure_axis(grid=False)#.configure_view(strokeOpacity=0)
-#         chart = alt.layer(chart,pr).resolve_scale(color='independent',y='independent').configure_axis(grid=False)#.configure_view(strokeOpacity=0)
-#     return chart
+# ----------DEFINING A FUNCTION FOR PLOTTING TOOLTIP-----------------------------  
+def plotting(data,metric,column=None,color=None,date_df=None,viz=None,country=None,pac=None):
+    date_df = typhoon_dict[country]
+    if metric == 'Staying put/sheltering in place':
+        domain = [0,100]
+    else:
+        domain=[-100,100]
+    date_df['y'] = 100
+    base = alt.Chart(data).encode(x=alt.X('ds', axis=alt.Axis(title='Date'),
+    ))\
+        .properties(width=700,height=300)
+    pr = base.mark_line(interpolate='basis',strokeWidth=2).encode(y=alt.Y(metric_dict[metric], axis=alt.Axis(title=metric_ylabel[metric]), scale=alt.Scale(domain=domain)),color=color,tooltip=[metric_dict[metric]])
+    circle = base.mark_circle(opacity=.5,size=20).encode(alt.Y('Policy Stringency', axis=alt.Axis(title='COVID-19 Policy Stringency')),tooltip=['Policy Stringency:N','School closures','Workplace closures','Cancellations of public events','Restrictions on gatherings','Public transport closures','Stay-at-home requirements','Internal movement restrictions','International travel controls'],color=alt.Color('Stringency Metric',scale=alt.Scale(scheme='Pastel2'),legend=alt.Legend(orient='bottom')))
+    try:
+        pac['Disaster Event'] = 'Pacific Typhoon'
+        rules = alt.Chart(pac.reset_index()).mark_rect(opacity=0.3,).encode(tooltip=['Province','Event'],x='start_date',x2='end_date',y2='y',y='_y',color=alt.Color('Disaster Event',
+        legend=alt.Legend(orient='bottom'),
+        scale=alt.Scale(scheme='reds')))
+    except:
+        pass
+    if set(viz) == set(['COVID-19 Restrictions']):
+        chart = alt.layer(circle,pr).interactive(bind_y=False).resolve_scale(y = 'independent',color='independent').configure_axis(grid=False).configure_view(strokeOpacity=0)
+    if set(viz)==set(['Pacific Typhoons']):
+        chart = alt.layer(pr,rules).interactive(bind_y=False).resolve_scale(color='independent').configure_axis(
+    grid=False)#.configure_view(strokeOpacity=0)
+    if set(viz)==set(['COVID-19 Restrictions','Pacific Typhoons']):
+        chart = alt.layer(circle,rules).interactive(bind_y=False).resolve_scale(color='independent')#.configure_axis(grid=False)#.configure_view(strokeOpacity=0)
+        chart = alt.layer(chart,pr).resolve_scale(color='independent',y='independent').configure_axis(grid=False)#.configure_view(strokeOpacity=0)
+    return chart
 
 # g = government_response_reader()
 # # ----------SELECTION OF LEVEL OF ANALYSIS----------------------
